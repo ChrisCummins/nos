@@ -1,0 +1,9 @@
+- Write .s sections in GAS syntax
+- Add a memory manager
+- Add a file abstraction and file system
+- Add a process abstraction and process manager
+- Add a binary executable loader
+- Add a framebuffer abstraction
+- Add a network stack
+- Add a graphics stack
+- Port to IA x86_64

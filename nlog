@@ -1,0 +1,4 @@
+#!/bin/bash
+# nlog - view the log from a simulation session.
+
+less bochsout.txt
