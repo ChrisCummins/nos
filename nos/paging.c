@@ -185,6 +185,10 @@ struct page_s *get_page(uint32_t address, enum create_page_e make,
   }
 }
 
+/* We don't want GCC complaining if we don't use the registers parameter. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 void page_fault(struct registers_s registers)
 {
   uint32_t faulting_address;
@@ -229,3 +233,5 @@ void page_fault(struct registers_s registers)
 
   PANIC("Page fault");
 }
+
+#pragma GCC diagnostic pop /* ignored "-Wunused-parameter" */

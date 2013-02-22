@@ -7,11 +7,17 @@
 
 static uint32_t tick = 0;
 
+/* We don't want GCC complaining if we don't use the registers parameter. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 static void _timer_callback(struct registers_s registers) {
   tick++;
 
   k_debug("Tick: %d", tick);
 }
+
+#pragma GCC diagnostic pop /* ignored "-Wunused-parameter" */
 
 void init_timer(uint32_t frequency)
 {
