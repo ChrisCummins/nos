@@ -22,19 +22,11 @@ typedef char *va_list;
 #define va_arg(ap, type)   (*(type *)((ap += _INTSIZEOF(type)) - _INTSIZEOF(type)))
 #define va_end(ap)         (ap = (va_list) 0)
 
-/* Kernel message output. */
-#define k_message(...)  kstream_message(KMESSAGE_PRINT,    __VA_ARGS__)
-#define k_warn(...)     kstream_message(KMESSAGE_WARNING,  __VA_ARGS__)
-#define k_critical(...) kstream_message(KMESSAGE_CRITICAL, __VA_ARGS__)
-
 #ifdef DEBUG
-# define k_debug(...)   kstream_message(KMESSAGE_DEBUG,    __VA_ARGS__)
+# define assert(assertion) ((assertion) ? (void)0 : panic_assert(__FILE__, __LINE__, #assertion))
 #else
-# define k_debug(...)
+# define assert(assertion)
 #endif /* DEBUG */
-
-/* Assertion. */
-#define assert(assertion) ((assertion) ? (void)0 : panic_assert(__FILE__, __LINE__, #assertion))
 
 #define PANIC(message) panic(message, __FILE__, __LINE__);
 

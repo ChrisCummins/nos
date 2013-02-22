@@ -25,4 +25,15 @@ int kstream_printf (enum kstream_style_e style, const char *format, ...);
 int kstream_vprintf(enum kstream_style_e style, const char *format,
                     va_list arguments);
 
+/* Kernel message output. */
+#define k_message(...)  kstream_message(KMESSAGE_PRINT,    __VA_ARGS__)
+#define k_warn(...)     kstream_message(KMESSAGE_WARNING,  __VA_ARGS__)
+#define k_critical(...) kstream_message(KMESSAGE_CRITICAL, __VA_ARGS__)
+
+#ifdef DEBUG
+# define k_debug(...)   kstream_message(KMESSAGE_DEBUG,    __VA_ARGS__)
+#else
+# define k_debug(...)
+#endif /* DEBUG */
+
 #endif /* _KSTREAM_H */
