@@ -52,7 +52,7 @@ export ASFLAGS CFLAGS LDFLAGS
 SUBDIRS := $(filter %/, $(wildcard ./*/))
 
 # Targets.
-.PHONY: all kernel help clean
+.PHONY: all kernel help clean TAGS
 
 all: kernel
 
@@ -70,6 +70,9 @@ clean:
 		$(MAKE) -C $$d clean; \
 	done
 
+TAGS:
+	$(QUIET)$(SHELL) ./scripts/tags.sh .
+
 help:
 	@echo 'Cleaning targets:'
 	@echo '  clean     - Remove generated files'
@@ -78,8 +81,9 @@ help:
 	@echo '  all       - Build all targets marked with [*]'
 	@echo '* kernel    - Build the base kernel'
 	@echo ''
-	@echo 'Simulation targets:'
+	@echo 'Other targets:'
 	@echo '  run       - Run the kernel in an emulator'
+	@echo '  TAGS      - Generate a ./TAGS file in emacs format'
 	@echo ''
 	@echo '  make V=0|1 [targets] 0 => quiet build (default), 1 => verbose build'
 	@echo ''
