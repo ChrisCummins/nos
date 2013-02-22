@@ -7,8 +7,7 @@
 
 static uint32_t tick = 0;
 
-/* TODO: static-ize this callback. */
-void timer_callback(struct registers_s registers) {
+static void _timer_callback(struct registers_s registers) {
   tick++;
 
   k_debug("Tick: %d", tick);
@@ -21,7 +20,7 @@ void init_timer(uint32_t frequency)
   k_message("Initialising Timer");
 
   /* Register our timer callback. */
-  register_interrupt_handler(IRQ0, (isr_t)&timer_callback);
+  register_interrupt_handler(IRQ0, (isr_t)&_timer_callback);
 
   /* Get the 16-bit divisor. */
   divisor = PIT_CLOCK_FREQUENCY / frequency;
