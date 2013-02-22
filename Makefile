@@ -52,7 +52,7 @@ export ASFLAGS CFLAGS LDFLAGS
 SUBDIRS := $(filter %/, $(wildcard ./*/))
 
 # Targets.
-.PHONY: all kernel help clean TAGS
+.PHONY: all kernel run log help clean TAGS
 
 all: kernel
 
