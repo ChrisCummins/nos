@@ -1,5 +1,6 @@
 #!/bin/bash
-# simulate - create and then execute an image file inside an emulator.
+# simulate.sh - create and then execute an image file inside an emulator.
+#               Usage: simulate.sh
 
 set -e
 
