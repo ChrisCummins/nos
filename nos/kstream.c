@@ -18,11 +18,6 @@
 extern uint8_t tty_cursor_x;
 extern uint8_t tty_cursor_y;
 
-/* These provide the vertical offset of the top of the visible framebuffer into the
- * character buffer. */
-static uint8_t framebuffer_x = 0;
-static uint8_t framebuffer_y = 0;
-
 static void _set_kstream_style(enum kstream_style_e style)
 {
   switch (style) {
