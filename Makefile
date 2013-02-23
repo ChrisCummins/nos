@@ -53,14 +53,14 @@ SUBDIRS    := $(filter %/, $(wildcard ./*/))
 SOURCEDIRS := nos
 
 # Targets.
-.PHONY: all kernel run log help clean TAGS
+.PHONY: all run log help clean TAGS $(SOURCEDIRS)
 
-all: kernel
+all: $(SOURCEDIRS)
 
-kernel:
-	$(QUIET)$(MAKE) -Cnos all
+$(SOURCEDIRS):
+	$(QUIET)$(MAKE) -C$@ all
 
-run: kernel
+run:
 	$(QUIET)$(SHELL) ./scripts/simulate.sh
 
 log:
@@ -68,7 +68,7 @@ log:
 
 clean:
 	$(QUIET)for d in $(SUBDIRS); do \
-		$(MAKE) -C $$d clean; \
+		$(MAKE) -C $$d $@; \
 	done
 
 TAGS:
@@ -80,7 +80,7 @@ help:
 	@echo ''
 	@echo 'Generic targets:'
 	@echo '  all       - Build all targets marked with [*]'
-	@echo '* kernel    - Build the base kernel'
+	@echo '* nos       - Build the base kernel'
 	@echo ''
 	@echo 'Other targets:'
 	@echo '  run       - Run the kernel in an emulator'
