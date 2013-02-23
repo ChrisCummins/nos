@@ -4,6 +4,26 @@
 #include <nos/types.h>
 #include <nos/isr.h>
 
+/* The size of a page. */
+#define PAGE_SIZE 0x1000
+
+/* This value can be used to determine if an address falls on a page boundary or
+ * not, by performing a logical AND of the given address and this mask. If the
+ * address falls on a page boundary, then the masking operation will zero all
+ * bits. */
+#define ALIGNMENT_MASK 0xFFFFF000
+
+/* Determines whether an address is page aligned or not. To do so, it ANDs the
+ * value with an alignment ask. If the address is page aligned, then the
+ * alignment mask will mask off all nonzero digits. If the address does not fall
+ * on a page boundary, then the index into the page will remain. */
+#define is_page_aligned(a)  ((((a) & ALIGNMENT_MASK) == 0) ? 1 : 0)
+
+/* Here we set some limits and sizes to our memory. */
+#define PAGES_IN_TABLE      1024
+#define TABLES_IN_DIRECTORY 1024
+#define MEMORY_END_PAGE     0x1000000
+
 typedef uint32_t frame_t;
 
 struct page_s {
@@ -17,12 +37,12 @@ struct page_s {
 };
 
 struct page_table_s {
-  struct page_s pages[1024];
+  struct page_s pages[PAGES_IN_TABLE];
 };
 
 struct page_directory_s {
-  struct page_table_s *virtual_tables[1024];
-  uint32_t             physical_address[1024];
+  struct page_table_s *virtual_tables[TABLES_IN_DIRECTORY];
+  uint32_t             physical_address[TABLES_IN_DIRECTORY];
   uint32_t             directory_address;
 };
 
@@ -45,5 +65,6 @@ struct page_s *get_page(uint32_t address, enum create_page_e make,
 void page_fault(struct registers_s registers);
 
 void alloc_frame(struct page_s *page, int is_kernel, int is_writeable);
+void free_frame (struct page_s *page);
 
 #endif /* _PAGING_H */
