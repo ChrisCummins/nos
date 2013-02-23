@@ -53,7 +53,7 @@ SUBDIRS    := $(filter %/, $(wildcard ./*/))
 SOURCEDIRS := nos
 
 # Targets.
-.PHONY: all run log help clean TAGS $(SOURCEDIRS)
+.PHONY: all run log help clean TAGS todo $(SOURCEDIRS)
 
 all: $(SOURCEDIRS)
 
@@ -74,6 +74,9 @@ clean:
 TAGS:
 	$(QUIET)$(SHELL) ./scripts/tags.sh $(SOURCEDIRS)
 
+todo:
+	$(QUIET)$(SHELL) ./scripts/todo.sh $(SOURCEDIRS)
+
 help:
 	@echo 'Cleaning targets:'
 	@echo '  clean     - Remove generated files'
@@ -85,6 +88,7 @@ help:
 	@echo 'Other targets:'
 	@echo '  run       - Run the kernel in an emulator'
 	@echo '  TAGS      - Generate a ./TAGS file in emacs format'
+	@echo '  todo      - Show all TODO and FIXME tags in source files'
 	@echo ''
 	@echo '  make V=0|1 [targets] 0 => quiet build (default), 1 => verbose build'
 	@echo ''
