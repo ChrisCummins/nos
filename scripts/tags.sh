@@ -1,24 +1,24 @@
 #!/bin/bash
 # tags.sh - Generate TAGS file.
-#           Usage tags.sh <srcdir>
+#           Usage tags.sh <directory ...>
 
 # Be very verbose.
 set -x
 
 if [ -z "$1" ]
 then
-    echo "Usage: $(basename $0) <srcdir>" >&2
+    echo "Usage: $(basename $0) <directory ...>" >&2
     exit 1
 fi
 
-srcdir="$1"
+for d in $@; do
+    if [ ! -d "$1" ]
+    then
+        echo "Directory '$d' not found" >&2
+        exit 1
+    fi
+done
 
-if [ ! -d "$1" ]
-then
-    echo "Directory '$1' not found" >&2
-    exit 1
-fi
-
-sources=$(find "$srcdir" -name '*.[ch]')
+sources=$(find $@ -name '*.[ch]')
 
 etags $sources

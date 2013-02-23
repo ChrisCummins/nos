@@ -49,7 +49,8 @@ LDFLAGS := \
 
 export ASFLAGS CFLAGS LDFLAGS
 
-SUBDIRS := $(filter %/, $(wildcard ./*/))
+SUBDIRS    := $(filter %/, $(wildcard ./*/))
+SOURCEDIRS := nos
 
 # Targets.
 .PHONY: all kernel run log help clean TAGS
@@ -71,7 +72,7 @@ clean:
 	done
 
 TAGS:
-	$(QUIET)$(SHELL) ./scripts/tags.sh .
+	$(QUIET)$(SHELL) ./scripts/tags.sh $(SOURCEDIRS)
 
 help:
 	@echo 'Cleaning targets:'
