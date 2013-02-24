@@ -2,7 +2,6 @@
 #include <nos/kstream.h>
 #include <nos/port.h>
 
-/* TODO: Replace isr_t with dynamically scalable list of handlers. */
 isr_t interrupt_handlers[256];
 
 static void _execute_handler(struct registers_s registers) {

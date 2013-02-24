@@ -49,7 +49,6 @@ void ordered_array_destroy(struct ordered_array_s *array)
   kfree((void*)array->data);
 }
 
-/* TODO: Implement an improved sort algorithm. */
 void ordered_array_insert(struct ordered_array_s *array, type_t item)
 {
   uint32_t i = 0;
