@@ -23,8 +23,8 @@ void init_idt()
   idt_p.limit = sizeof(struct idt_entry_s) * 256 - 1;
   idt_p.base  = (uint32_t)&idt_entries;
 
-  memory_set((uint8_t *)&idt_entries, (sizeof(struct idt_entry_s)) * 256, 0);
-  memory_set((uint8_t *)&interrupt_handlers, (sizeof(isr_t)) * 256, 0);
+  memory_set((void *)&idt_entries, (sizeof(struct idt_entry_s)) * 256, 0);
+  memory_set((void *)&interrupt_handlers, (sizeof(isr_t)) * 256, 0);
 
   /* When the computer boots, the default interrupt mappings are:
    *    IRQ 0..7 - INT 0x8..0xF
