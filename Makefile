@@ -40,7 +40,7 @@ LDFLAGS := $(NULL)
 export ASFLAGS CFLAGS LDFLAGS
 
 SUBDIRS    := $(filter %/, $(wildcard ./*/))
-SOURCEDIRS := nos
+SOURCEDIRS := nos initrd
 
 # Targets.
 .PHONY: all run log help clean TAGS todo $(SOURCEDIRS)
@@ -55,6 +55,8 @@ run:
 
 log:
 	$(QUIET)less bochsout.txt
+initrd.img:
+	$(QUIET)$(SHELL) ./scripts/mkinitrd.sh
 
 clean:
 	$(QUIET)for d in $(SUBDIRS); do \
