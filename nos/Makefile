@@ -58,7 +58,23 @@ SOURCES_ASM  :=        		\
 OBJECT_FILES := $(patsubst %.s,%.o,$(SOURCES_ASM))
 OBJECT_FILES += $(patsubst %.c,%.o,$(SOURCES_C))
 
-CFLAGS += -DDEBUG
+# We need to set some compile and link configuration settings to build for x86
+# architectures.
+CFLAGS += \
+	   -fno-builtin \
+	   -fno-stack-protector \
+	   -m32 \
+	   -march=i386 \
+	   -nostdinc \
+	   -nostdlib \
+	   $(NULL)
+
+ASFLAGS += -felf
+
+LDFLAGS += \
+	   -melf_i386 \
+           -Tlink.ld \
+	   $(NULL)
 
 # Build targets.
 all: $(TARGET)

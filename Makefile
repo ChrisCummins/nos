@@ -24,13 +24,8 @@ INCLUDE := \
 
 # Compiler flags.
 CFLAGS  := \
-	   -fno-builtin \
-	   -fno-stack-protector \
+	   -DDEBUG \
 	   $(INCLUDE) \
-	   -m32 \
-	   -march=i386 \
-	   -nostdinc \
-	   -nostdlib \
 	   -pedantic \
 	   -std=c99 \
 	   -Wall \
@@ -38,14 +33,9 @@ CFLAGS  := \
 	   -Wstrict-prototypes \
 	   $(NULL)
 
-ASFLAGS := \
-	   -felf \
-	   $(NULL)
+ASFLAGS := $(NULL)
 
-LDFLAGS := \
-	   -Tlink.ld \
-	   -melf_i386 \
-	   $(NULL)
+LDFLAGS := $(NULL)
 
 export ASFLAGS CFLAGS LDFLAGS
 
