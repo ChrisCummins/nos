@@ -147,7 +147,8 @@ void alloc_frame(struct page_s *page, int is_kernel, int is_writeable)
 
     index = _first_frame();
     if (index == (uint32_t)-1) {
-      /* TODO: No free frames. PANIC. */
+      k_critical("Unable to allocate a frame for page %p", page);
+      panic("Out of Memory");
     }
 
     _set_frame(index * PAGE_SIZE);
