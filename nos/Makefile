@@ -11,7 +11,6 @@ HEADER_FILES :=              	\
 		isr.c		\
 		kheap.h		\
 		kstream.h	\
-		memory.h	\
 		ordered-array.h \
 		paging.h	\
 		port.h		\
@@ -35,7 +34,6 @@ SOURCES_C    :=			\
 		kheap.c		\
 		kstream.c	\
 		main.c		\
-		memory.c	\
 		ordered-array.c \
 		paging.c	\
 		port.c		\

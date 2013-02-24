@@ -1,7 +1,8 @@
 #include <nos/paging.h>
+
 #include <nos/kheap.h>
-#include <nos/memory.h>
 #include <nos/kstream.h>
+#include <nos/string.h>
 #include <nos/util.h>
 
 /* Macros used in the bitset algorithms. */

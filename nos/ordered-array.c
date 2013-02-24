@@ -1,9 +1,9 @@
 #include <nos/ordered-array.h>
 
 #include <nos/kheap.h>
-#include <nos/memory.h>
-#include <nos/util.h>
 #include <nos/kstream.h>
+#include <nos/string.h>
+#include <nos/util.h>
 
 sint8_t default_predicate(type_t a, type_t b)
 {

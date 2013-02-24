@@ -1,9 +1,10 @@
 #include <nos/idt.h>
 
 #include <nos/isr.h>
-#include <nos/memory.h>
-#include <nos/port.h>
 #include <nos/kstream.h>
+#include <nos/util.h>
+#include <nos/port.h>
+#include <nos/string.h>
 
 extern void idt_flush(uint32_t);
 

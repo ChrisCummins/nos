@@ -2,7 +2,6 @@
 
 #include <nos/string.h>
 #include <nos/tty.h>
-#include <nos/memory.h>
 
 /* Some colours. */
 #define KSTREAM_NORMAL_BACKGROUND    TTY_COLOUR_BLACK
