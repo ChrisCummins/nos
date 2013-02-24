@@ -1,6 +1,7 @@
 #ifndef _KSTREAM_H
 #define _KSTREAM_H
 
+#include <nos/stdarg.h>
 #include <nos/util.h>
 
 enum kstream_message_e {

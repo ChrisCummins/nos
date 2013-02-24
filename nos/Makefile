@@ -18,6 +18,7 @@ HEADER_FILES :=              	\
 		ports/pit.h	\
 		ports/tty.h	\
 		string.h	\
+		stdarg.h	\
 		timer.h		\
 		tty.h		\
 		tty/ascii.h	\

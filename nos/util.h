@@ -16,12 +16,6 @@
 #define min(x, y) (((x) < (y)) ? (x) : (y))
 #define max(x, y) (((x) > (y)) ? (x) : (y))
 
-/* Variable argument list functions. */
-typedef char *va_list;
-#define va_start(ap, last) (ap = (va_list) &last + _INTSIZEOF(last))
-#define va_arg(ap, type)   (*(type *)((ap += _INTSIZEOF(type)) - _INTSIZEOF(type)))
-#define va_end(ap)         (ap = (va_list) 0)
-
 #ifdef DEBUG
 # define assert(assertion) ((assertion) ? (void)0 : panic_assert(__FILE__, __LINE__, #assertion))
 #else
