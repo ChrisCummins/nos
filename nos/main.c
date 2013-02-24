@@ -6,10 +6,13 @@
 #include <nos/string.h>
 #include <nos/kstream.h>
 
-/* We don't want GCC complaining about malformed int main() arguments. */
-#pragma GCC diagnostic ignored "-Wmain"
+struct multiboot_s;
 
-int kmain(struct multiboot *mboot_ptr)
+/* We don't want GCC complaining if we don't use the registers parameter. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
+int kmain(struct multiboot_s *mboot_ptr)
 {
   init_kstream();
 
@@ -27,3 +30,5 @@ int kmain(struct multiboot *mboot_ptr)
 
   return 0;
 }
+
+#pragma GCC diagnostic pop /* ignored "-Wunused-parameter" */
