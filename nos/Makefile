@@ -6,6 +6,7 @@ TARGET       := kernel
 
 # Header file locations.
 HEADER_FILES :=              	\
+		fs.h		\
 		gdt.h		\
 		idt.h		\
 		isr.c		\
@@ -29,6 +30,7 @@ HEADER_FILES :=              	\
 
 # C source file locations.
 SOURCES_C    :=			\
+		fs.c		\
 		gdt.c		\
 		idt.c		\
 		isr.c		\
