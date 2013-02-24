@@ -45,8 +45,7 @@ struct ordered_array_s ordered_array_place(void *address, uint32_t max_size,
 
 void ordered_array_destroy(struct ordered_array_s *array)
 {
-  /* TODO: Implement kfree */
-  /* kfree(array->data); */
+  kfree((void*)array->data);
 }
 
 /* TODO: Implement an improved sort algorithm. */
