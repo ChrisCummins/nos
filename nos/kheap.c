@@ -1,5 +1,6 @@
 #include <nos/kheap.h>
 
+#include <nos/assert.h>
 #include <nos/paging.h>
 #include <nos/util.h>
 #include <nos/kstream.h>

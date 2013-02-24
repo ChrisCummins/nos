@@ -6,6 +6,7 @@ TARGET       := kernel
 
 # Header file locations.
 HEADER_FILES :=              	\
+		assert.h	\
 		fs.h		\
 		gdt.h		\
 		idt.h		\
@@ -14,6 +15,7 @@ HEADER_FILES :=              	\
 		kstream.h	\
 		ordered-array.h \
 		paging.h	\
+		panic.h		\
 		port.h		\
 		ports/pic.h	\
 		ports/pit.h	\
@@ -38,12 +40,12 @@ SOURCES_C    :=			\
 		kstream.c	\
 		main.c		\
 		ordered-array.c \
+		panic.c		\
 		paging.c	\
 		port.c		\
 		string.c	\
 		timer.c		\
 		tty.c		\
-		util.c		\
 		$(NULL)
 
 # Assembly source file locations.

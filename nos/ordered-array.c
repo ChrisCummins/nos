@@ -1,5 +1,6 @@
 #include <nos/ordered-array.h>
 
+#include <nos/assert.h>
 #include <nos/kheap.h>
 #include <nos/kstream.h>
 #include <nos/string.h>

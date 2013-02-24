@@ -1,10 +1,11 @@
-#include <nos/util.h>
+#include <nos/panic.h>
+
 #include <nos/kstream.h>
 
 #define DISABLE_INTERRUPTS __asm volatile("cli")
 #define CPU_HALT for(;;)
 
-extern void panic(const char *message, const char *file, uint32_t line)
+extern void panic_halt(const char *message, const char *file, uint32_t line)
 {
   DISABLE_INTERRUPTS;
 

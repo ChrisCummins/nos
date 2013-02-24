@@ -2,6 +2,7 @@
 
 #include <nos/kheap.h>
 #include <nos/kstream.h>
+#include <nos/panic.h>
 #include <nos/string.h>
 #include <nos/util.h>
 
@@ -254,7 +255,7 @@ void page_fault(struct registers_s registers)
 
   /* tty_write("]\n"); */
 
-  PANIC("Page fault");
+  panic("Page fault");
 }
 
 #pragma GCC diagnostic pop /* ignored "-Wunused-parameter" */
