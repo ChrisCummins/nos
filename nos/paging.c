@@ -94,11 +94,11 @@ void init_paging()
   /* Get the number of frames. */
   frames_count = MEMORY_END_PAGE / PAGE_SIZE;
   frames       = (uint32_t *)kmalloc(INDEX_FROM_BIT(frames_count));
-  memory_set((void *)frames, INDEX_FROM_BIT(frames_count), 0);
+  memset((void *)frames, INDEX_FROM_BIT(frames_count), 0);
 
   /* Make a page directory. */
   kernel_directory  = kcreate_a(struct page_directory_s, 1);
-  memory_set((void *)kernel_directory, sizeof(struct page_directory_s), 0x0);
+  memset((void *)kernel_directory, sizeof(struct page_directory_s), 0x0);
   current_directory = kernel_directory;
 
   /* Map some pages in the kernel heap area, using get_page() not
