@@ -16,7 +16,7 @@ struct ordered_array_s ordered_array_new(uint32_t max_size,
 {
   struct ordered_array_s array;
 
-  array.data = (void*)kmalloc(sizeof(type_t) * max_size);
+  array.data = kcreate(type_t, max_size);
   array.size = 0;
   array.max_size = max_size;
   array.predicate = predicate;
