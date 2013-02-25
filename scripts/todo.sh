@@ -2,6 +2,10 @@
 # todo.sh - display all 'TODO:' and 'FIXME:' tags in source directories.
 #           Usage: todo.sh <directory ...>
 
+if [ -n "$DEBUG" ]; then
+    set -x
+fi
+
 if [ -z "$1" ]
 then
     echo "Usage: $(basename $0) <directory ...>" >&2

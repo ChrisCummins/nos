@@ -2,6 +2,10 @@
 # simulate.sh - create and then execute an image file inside an emulator.
 #               Usage: simulate.sh
 
+if [ -n "$DEBUG" ]; then
+    set -x
+fi
+
 set -e
 
 # Update the image archive.
