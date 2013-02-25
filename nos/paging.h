@@ -1,8 +1,8 @@
 #ifndef _PAGING_H
 #define _PAGING_H
 
-#include <nos/types.h>
 #include <nos/isr.h>
+#include <nos/types.h>
 
 /* The size of a page. */
 #define PAGE_SIZE 0x1000
