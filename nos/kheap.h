@@ -6,7 +6,7 @@
 
 /* Limits and characteristics of the heap. These are arbritary and
  * customiseable values. */
-#define KHEAP_START         0xC0000000
+#define KHEAP_START         0x00600000
 #define KHEAP_MAX           0xCFFFF000
 #define KHEAP_INITIAL_SIZE  0x100000
 #define HEAP_INDEX_SIZE     0x20000
