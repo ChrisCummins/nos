@@ -136,7 +136,7 @@ void init_paging()
 
   /* Initialise the kernel heap. */
   kernel_heap = heap_create(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE,
-                            0xCFFFF000, 0, 0);
+                            KHEAP_MAX, 0, 0);
 }
 
 /* Allocate a frame. */
