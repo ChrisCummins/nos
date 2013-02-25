@@ -4,6 +4,7 @@
 #include <nos/kstream.h>
 #include <nos/panic.h>
 #include <nos/string.h>
+#include <nos/tty.h>
 #include <nos/util.h>
 
 /* Macros used in the bitset algorithms. */
@@ -217,44 +218,44 @@ struct page_s *get_page(uint32_t address, enum create_page_e make,
 void page_fault(struct registers_s registers)
 {
   uint32_t faulting_address;
-  /* int present; */
-  /* int rw; */
-  /* int us; */
-  /* int reserved; */
-  /* int id; */
+  int present;
+  int rw;
+  int us;
+  int reserved;
+  int id;
 
   /* A page fault has occurred. The fault address is stored in the CR2
    * register. */
   __asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
 
   /* Decode information from the error code. */
-  /* present  = !(registers.error_code & 0x1); */
-  /* rw       = registers.error_code & 0x2; */
-  /* us       = registers.error_code & 0x4; */
-  /* reserved = registers.error_code & 0x8; */
-  /* id       = registers.error_code & 0x10; */
+  present  = !(registers.error_code & 0x1);
+  rw       = registers.error_code & 0x2;
+  us       = registers.error_code & 0x4;
+  reserved = registers.error_code & 0x8;
+  id       = registers.error_code & 0x10;
 
-  k_critical("PAGE FAULT: %h", faulting_address);
+  k_critical("PAGE FAULT: %h ", faulting_address);
 
-  /* if (present) { */
-  /*   tty_write("PRESENT "); */
-  /* } */
+  if (present) {
+    tty_write("PRESENT ");
+  }
 
-  /* if (rw) { */
-  /*   tty_write("READ-ONLY "); */
-  /* } */
+  if (rw) {
+    tty_write("READ-ONLY ");
+  }
 
-  /* if (us) { */
-  /*   tty_write("USER-MODE "); */
-  /* } else { */
-  /*   tty_write("KERNEL-MODE "); */
-  /* } */
+  if (us) {
+    tty_write("USER-MODE ");
+  } else {
+    tty_write("KERNEL-MODE ");
+  }
 
-  /* if (reserved) { */
-  /*   tty_write("RESERVED "); */
-  /* } */
+  if (reserved) {
+    tty_write("RESERVED ");
+  }
 
-  /* tty_write("]\n"); */
+  tty_write("\n");
 
   panic("Page fault");
 }
