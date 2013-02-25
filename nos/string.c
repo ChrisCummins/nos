@@ -41,7 +41,7 @@ int strcmp(const char *s1, const char *s2)
   return 0;
 }
 
-void *memcpy(void *destination, uint32_t length, const uint8_t *source)
+uint8_t *memcpy(uint8_t *destination, uint32_t length, const uint8_t *source)
 {
   const uint8_t *source_p;
   uint8_t *destination_p;
@@ -57,7 +57,7 @@ void *memcpy(void *destination, uint32_t length, const uint8_t *source)
 }
 
 /* Write 'length' copies of 'value' to 'destination'. */
-void *memset(void *destination, uint32_t length, uint8_t value)
+uint8_t *memset(uint8_t *destination, uint32_t length, uint8_t value)
 {
   uint8_t *destination_p;
 
