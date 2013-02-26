@@ -1,21 +1,3 @@
-# The default goal is...
-.DEFAULT_GOAL = $(TARGET)
+.PHONY: all clean mrproper
 
-TARGET       := initrd-gen
-
-SOURCES_C    := initrd-gen.c
-OBJECT_FILES := $(patsubst %.c,%.o,$(SOURCES_C))
-
-# Build targets.
-all: $(TARGET)
-
-$(TARGET): $(OBJECT_FILES)
-	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJECT_FILES)
-
-# Compilation rule.
-.c.o:
-	$(CC) $(CFLAGS) -c $<
-
-# Clean up binaries and object files.
-clean:
-	$(RM) $(OBJECT_FILES) $(TARGET)
+all clean mrproper:

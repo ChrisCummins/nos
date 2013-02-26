@@ -101,5 +101,5 @@ install:
 	$(AS) $(ASFLAGS) $<
 
 # Clean up binaries and object files.
-clean:
+mrproper clean:
 	$(RM) $(OBJECT_FILES) $(TARGET)

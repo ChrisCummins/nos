@@ -75,9 +75,14 @@ initrd:
 	$(QUIET)$(SHELL) ./scripts/mkinitrd.sh
 
 # Clean targets.
-.PHONY: clean
+.PHONY: clean mrproper
 
 clean:
+	$(QUIET)for d in $(SUBDIRS); do \
+		$(MAKE) -C $$d $@; \
+	done
+
+mrproper:
 	$(QUIET)for d in $(SUBDIRS); do \
 		$(MAKE) -C $$d $@; \
 	done
@@ -98,18 +103,20 @@ umount:
 help:
 	@echo 'Cleaning targets:'
 	@echo '  clean      - Remove generated files'
+	@echo '  mrproper   - Remove all generated files + logs'
 	@echo ''
 	@echo 'Generic targets:'
 	@echo '  all        - Build all targets marked with [*]'
-	@echo '* floppy     - Generate bootable image from contents of floppy/'
-	@echo '* initrd     - Generate an initrd image from contents of initrd/'
 	@echo '* initrd-gen - Build the initrd-gen program'
 	@echo '* nos        - Build the base kernel'
 	@echo ''
+	@echo 'Image targets:'
+	@echo '* floppy     - Generate bootable image from contents of floppy/'
+	@echo '* initrd     - Generate an initrd image from contents of initrd/'
+	@echo '  run        - Start a bochs session with the compiled kernel'
+	@echo ''
 	@echo 'Other targets:'
-	@echo '  run        - Run the kernel in an emulator'
 	@echo '  TAGS       - Generate a ./TAGS file in emacs format'
-	@echo '  todo       - Show all TODO and FIXME tags in source files'
 	@echo ''
 	@echo '  make V=0|1 [targets] 0 => quiet build (default), 1 => verbose build'
 	@echo ''

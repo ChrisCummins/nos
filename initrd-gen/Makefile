@@ -12,10 +12,13 @@ all: $(TARGET)
 $(TARGET): $(OBJECT_FILES)
 	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJECT_FILES)
 
-# Compilation rule.
 .c.o:
 	$(CC) $(CFLAGS) -c $<
+
+.PHONY: clean mrproper
 
 # Clean up binaries and object files.
 clean:
 	$(RM) $(OBJECT_FILES) $(TARGET)
+
+mrproper: clean

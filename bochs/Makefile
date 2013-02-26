@@ -1,8 +1,9 @@
-.PHONY: all log clean
+.PHONY: all clean mrproper log
 
-all:
+all clean:
+
+mrproper:
+	$(RM) bochs.log
 
 log:
 	$(QUIET)$(LESS) bochsout.txt
-
-clean:

@@ -1,3 +1,3 @@
-.PHONY: clean
+.PHONY: all clean mrproper
 
-clean:
+all clean mrproper:
