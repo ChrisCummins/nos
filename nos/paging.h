@@ -22,7 +22,7 @@
 /* Here we set some limits and sizes to our memory. */
 #define PAGES_IN_TABLE      1024
 #define TABLES_IN_DIRECTORY 1024
-#define MEMORY_END_PAGE     0x1000000
+#define MEMORY_END_PAGE     0x01000000
 
 typedef uint32_t frame_t;
 

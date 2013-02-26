@@ -6,14 +6,20 @@ QUIET_  = @
 QUIET   = $(QUIET_$(V))
 export QUIET_ QUIET
 
-# Makefile variables.
-SHELL  := /bin/bash
-AS     := nasm
-CC     := gcc
-LD     := ld
-RM     := rm -fv
-
-export CC LD RM AS
+# Configuration variables (exported to sub-makes).
+export AS      := nasm
+export CC      := gcc
+export CP      := cp
+export LD      := ld
+export LESS    := less
+export LOSETUP := losetup
+export MKDIR   := mkdir
+export MOUNT   := mount
+export RM      := rm -fv
+export RMDIR   := rmdir
+export SHELL   := /bin/bash
+export SUDO    := sudo
+export UMOUNT  := mount
 
 # Include directories.
 topdir  := $(PWD)
@@ -40,34 +46,54 @@ LDFLAGS := $(NULL)
 export ASFLAGS CFLAGS LDFLAGS
 
 SUBDIRS    := $(filter %/, $(wildcard ./*/))
-SOURCEDIRS := nos initrd
+SOURCEDIRS := nos initrd-gen
 
-# Targets.
-.PHONY: all run log help clean TAGS todo $(SOURCEDIRS)
+# Build targets.
+.PHONY: all $(SOURCEDIRS) help
 
-all: $(SOURCEDIRS)
+all: $(SOURCEDIRS) floppy
 
 $(SOURCEDIRS):
 	$(QUIET)$(MAKE) -C$@ all
 
-run:
-	$(QUIET)$(SHELL) ./scripts/simulate.sh
+# Simulation targets.
+.PHONY: log run floppy initrd
 
 log:
-	$(QUIET)less bochsout.txt
-initrd.img:
+	less bochs/bochsout.txt
+
+run:
+	$(QUIET)$(SHELL) ./scripts/bochs.sh
+
+# Temporary mountpoint for constructing boot image.
+MOUNTPOINT = loop0
+
+floppy: initrd
+	$(QUIET)$(SHELL) ./scripts/mkfloppy.sh
+
+initrd:
 	$(QUIET)$(SHELL) ./scripts/mkinitrd.sh
+
+# Clean targets.
+.PHONY: clean
 
 clean:
 	$(QUIET)for d in $(SUBDIRS); do \
 		$(MAKE) -C $$d $@; \
 	done
 
+# Miscellaneous targets.
+.PHONY: TAGS mount umount help
+
 TAGS:
 	$(QUIET)$(SHELL) ./scripts/tags.sh $(SOURCEDIRS)
 
-todo:
-	$(QUIET)$(SHELL) ./scripts/todo.sh $(SOURCEDIRS)
+mount:
+	$(QUIET)$(SHELL) ./scripts/mkfloppy.sh mount
+	@echo 'floppy.img mounted at loop0/'
+
+umount:
+	$(QUIET)$(SHELL) ./scripts/mkfloppy.sh umount
 
 help:
 	@echo 'Cleaning targets:'
@@ -75,8 +101,9 @@ help:
 	@echo ''
 	@echo 'Generic targets:'
 	@echo '  all        - Build all targets marked with [*]'
-	@echo '* initrd     - Build the initrd-gen program'
-	@echo '* initrd.img - Generate an initrd image from the contents ofboot/initrd'
+	@echo '* floppy     - Generate bootable image from contents of floppy/'
+	@echo '* initrd     - Generate an initrd image from contents of initrd/'
+	@echo '* initrd-gen - Build the initrd-gen program'
 	@echo '* nos        - Build the base kernel'
 	@echo ''
 	@echo 'Other targets:'

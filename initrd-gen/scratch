@@ -1,0 +1,6 @@
+Usage: mkfloppy [--help]
+
+Automatically generate a bootable image from an input directory.
+
+    Directory: floppy/
+    Image:     floppy.img

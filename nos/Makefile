@@ -10,9 +10,11 @@ HEADER_FILES :=              	\
 		fs.h		\
 		gdt.h		\
 		idt.h		\
+		initrd.h	\
 		isr.c		\
 		kheap.h		\
 		kstream.h	\
+		multiboot.h	\
 		ordered-array.h \
 		paging.h	\
 		panic.h		\
@@ -35,6 +37,7 @@ SOURCES_C    :=			\
 		fs.c		\
 		gdt.c		\
 		idt.c		\
+		initrd.c	\
 		isr.c		\
 		kheap.c		\
 		kstream.c	\
@@ -79,10 +82,16 @@ LDFLAGS += \
 	   $(NULL)
 
 # Build targets.
-all: $(TARGET)
+all: $(TARGET) install
 
 $(TARGET): $(OBJECT_FILES) $(HEADER_FILES)
 	$(LD) $(LDFLAGS) -o $(TARGET) $(OBJECT_FILES)
+
+# Install targets
+.PHONY: install
+
+install:
+	$(SUDO) $(CP) $(TARGET) ../floppy/kernel
 
 # Compilation rules.
 .c.o:

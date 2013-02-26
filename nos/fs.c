@@ -3,12 +3,18 @@
 /* Filesystem root. */
 struct fs_node_s *fs_root = 0;
 
+/* We don't want GCC complaining if we have an unused parameter. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 void fs_open (struct fs_node_s *node, uint8_t read, uint8_t write)
 {
   if(node->open) {
     node->open(node);
   }
 }
+
+#pragma GCC diagnostic pop /* ignored "-Wunused-parameter" */
 
 void fs_close(struct fs_node_s *node)
 {

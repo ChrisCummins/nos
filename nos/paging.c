@@ -133,6 +133,7 @@ void init_paging()
   register_interrupt_handler(14, page_fault);
 
   /* Enable paging. */
+  k_message("Kernel dir: %p", kernel_directory);
   switch_page_directory(kernel_directory);
 
   /* Initialise the kernel heap. */

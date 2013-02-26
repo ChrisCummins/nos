@@ -1,5 +1,2 @@
 *.o
-bochsout.txt
-floppy.img
 TAGS
-initrd.img

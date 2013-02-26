@@ -1,6 +1,8 @@
 #ifndef _ASSERT_H
 #define _ASSERT_H
 
+#include <nos/types.h>
+
 extern void panic_assert(const char *file, uint32_t line, const char *expression);
 
 /* If the DEBUG macro was not defined at the moment <assert.h> was last
