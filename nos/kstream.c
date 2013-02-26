@@ -124,6 +124,13 @@ int kstream_vprintf(enum kstream_style_e style, const char *format, va_list argu
           i++;
         }
 
+        if (format[i+1] == 'c') {
+          char temp = va_arg(arguments, char);
+
+          tty_putc(temp);
+          i++;
+        }
+
         if (format[i+1] == 'd') {
           int temp = va_arg(arguments, int);
 
