@@ -21,7 +21,6 @@ int kmain(struct multiboot_s *mboot)
   int i = 0;
   struct fs_node_s *fs_root;
   struct dirent_s *node = 0;
-  uint32_t a;
 
   init_kstream();
   init_timer(50);
@@ -35,7 +34,6 @@ int kmain(struct multiboot_s *mboot)
   /* Ensure that our module does not get overwritten. */
   placement_address = initrd_end;
 
-  a = kmalloc(8);
   init_paging();
 
   fs_root = init_initrd(initrd_location);
