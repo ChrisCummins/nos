@@ -68,6 +68,7 @@ OBJECT_FILES += $(patsubst %.c,%.o,$(SOURCES_C))
 CFLAGS += \
 	   -fno-builtin \
 	   -fno-stack-protector \
+	   -O0 \
 	   -m32 \
 	   -march=i386 \
 	   -nostdinc \
