@@ -2,7 +2,11 @@
 #define _PAGING_H
 
 #include <nos/isr.h>
+#include <nos/kstream.h>
 #include <nos/types.h>
+
+/* Define this for paging debugging. */
+#undef PAGING_DEBUG
 
 /* The size of a page. */
 #define PAGE_SIZE 0x1000
@@ -23,6 +27,16 @@
 #define PAGES_IN_TABLE      1024
 #define TABLES_IN_DIRECTORY 1024
 #define MEMORY_END_PAGE     0x01000000
+
+#ifdef PAGING_DEBUG
+# define paging_debug(...) {                                \
+    k_debug("PAGING (%s, %d): %s ",                         \
+            __FILE__, __LINE__, __func__);                 \
+    kstream_printf(__VA_ARGS__);                           \
+  }
+#else
+# define paging_debug(f, ...) /**/
+#endif
 
 typedef uint32_t frame_t;
 
