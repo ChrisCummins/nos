@@ -6,7 +6,7 @@
 #include <types.h>
 
 /* Define this for paging debugging. */
-#undef PAGING_DEBUG
+#define PAGING_DEBUG 1
 
 /* The size of a page. */
 #define PAGE_SIZE 0x1000
@@ -30,15 +30,13 @@
 
 #ifdef PAGING_DEBUG
 # define paging_debug(...) {                                \
-    k_debug("PAGING (%s, %d): %s ",                         \
-            __FILE__, __LINE__, __func__);                 \
-    kstream_printf(__VA_ARGS__);                           \
+    k_debug("PAGING (%s, %d): %s() ",                       \
+            __FILE__, __LINE__, __func__);                  \
+    k_debug(__VA_ARGS__);                                   \
   }
 #else
 # define paging_debug(f, ...) /**/
 #endif
-
-typedef uint32_t frame_t;
 
 struct page_s {
   uint32_t present  :  1; /* Page present in memory. */
@@ -80,5 +78,8 @@ void page_fault(struct registers_s registers);
 
 void alloc_frame(struct page_s *page, int is_kernel, int is_writeable);
 void free_frame (struct page_s *page);
+
+struct page_directory_s *clone_directory(struct page_directory_s *src);
+
 
 #endif /* _PAGING_H */

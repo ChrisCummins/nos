@@ -11,12 +11,15 @@
 #define INDEX_FROM_BIT(a)  (a / (8 * 4))
 #define OFFSET_FROM_BIT(a) (a % (8 * 4))
 
+/* Defined in ./process.s. */
+extern void copy_page_physical(uint32_t src, uint32_t dest);
+
 struct page_directory_s *kernel_directory  = 0;
 struct page_directory_s *current_directory = 0;
 
 /* A bitset of frames, used or free. */
-static frame_t  *frames;
-static uint32_t  frames_count;
+static uint32_t *frames;
+static uint32_t frames_count;
 
 /* Defined in ./kheap.c. */
 extern uint32_t       placement_address;
@@ -25,47 +28,47 @@ extern struct heap_s *kernel_heap;
 /* Set a bit in a frame's bitset. */
 static void _set_frame(uint32_t frame_address)
 {
-  frame_t  frame;
-  uint32_t index;
+  uint32_t frame;
+  uint32_t i;
   uint32_t offset;
 
-  frame  = frame_address / PAGE_SIZE;
-  index  = INDEX_FROM_BIT(frame);
+  frame = frame_address / PAGE_SIZE;
+  i = INDEX_FROM_BIT(frame);
   offset = OFFSET_FROM_BIT(frame);
 
-  frames[index] |= (0x1 << offset);
+  frames[i] |= (0x1 << offset);
 }
 
 /* Clear a bit in a frame's bitset. */
 static void _clear_frame(uint32_t frame_address)
 {
-  frame_t  frame;
-  uint32_t index;
+  uint32_t frame;
+  uint32_t i;
   uint32_t offset;
 
-  frame  = frame_address / PAGE_SIZE;
-  index  = INDEX_FROM_BIT(frame);
+  frame = frame_address / PAGE_SIZE;
+  i = INDEX_FROM_BIT(frame);
   offset = OFFSET_FROM_BIT(frame);
 
-  frames[index] &= ~(0x1 << offset);
+  frames[i] &= ~(0x1 << offset);
 }
 
 /* Test if a bit is set. */
-static uint32_t _test_frame(uint32_t frame_address)
-{
-  frame_t  frame;
-  uint32_t index;
-  uint32_t offset;
+/* static uint32_t _test_frame(uint32_t frame_address) */
+/* { */
+/*   uint32_t  frame; */
+/*   uint32_t index; */
+/*   uint32_t offset; */
 
-  frame  = frame_address / PAGE_SIZE;
-  index  = INDEX_FROM_BIT(frame);
-  offset = OFFSET_FROM_BIT(frame);
+/*   frame  = frame_address / PAGE_SIZE; */
+/*   index  = INDEX_FROM_BIT(frame); */
+/*   offset = OFFSET_FROM_BIT(frame); */
 
-  return (frames[index] & (0x1 << offset));
-}
+/*   return (frames[index] & (0x1 << offset)); */
+/* } */
 
 /* Find the first free frame. */
-static frame_t _first_frame(void)
+static uint32_t _first_frame(void)
 {
   uint32_t i;
   uint32_t j;
@@ -73,12 +76,12 @@ static frame_t _first_frame(void)
   for (i = 0; i < INDEX_FROM_BIT(frames_count); i++) {
     if (frames[i] != 0xFFFFFFFF) {
       /* At least one bit is free in this frame. */
-      for (j = 0; j < (sizeof(frame_t) * 8); j++) {
+      for (j = 0; j < (sizeof(uint32_t) * 8); j++) {
         uint32_t test;
 
         test = 0x1 << j;
         if (!(frames[i] & test)) {
-          return ((i * sizeof(frame_t) * 8) + j);
+          return ((i * sizeof(uint32_t) * 8) + j);
         }
       }
     }
@@ -87,21 +90,53 @@ static frame_t _first_frame(void)
   return 0;
 }
 
+static struct page_table_s *clone_table(struct page_table_s *src,
+                                        uint32_t *physical_address)
+{
+  struct page_table_s *table;
+  int i;
+
+  /* Make and zero a page aligned table. */
+  table = kcreate_ap(struct page_table_s, 1, physical_address);
+  memset((uint8_t *)table, sizeof(struct page_directory_s), 0x0);
+
+  /* Iterate over the table entries. */
+  for (i = 0; i < PAGES_IN_TABLE; i++) {
+    /* If the source entry has a frame associated with it, then copy it. */
+    if (src->pages[i].frame) {
+      /* Get a new frame. */
+      alloc_frame(&table->pages[i], 0, 0);
+
+      /* Clone the flags from src to dst. */
+      src->pages[i].present = table->pages[i].present;
+      src->pages[i].rw = table->pages[i].rw;
+      src->pages[i].user = table->pages[i].user;
+      src->pages[i].accessed = table->pages[i].accessed;
+      src->pages[i].dirty = table->pages[i].dirty;
+
+      /* Physically copy the data accross. */
+      copy_page_physical(src->pages[i].frame * PAGE_SIZE, table->pages[i].frame * PAGE_SIZE);
+    }
+  }
+
+  return table;
+}
+
 void init_paging()
 {
   uint32_t i;
 
-  k_message("Initialising Paging");
+  paging_debug("initialising paging");
 
   /* Get the number of frames. */
   frames_count = MEMORY_END_PAGE / PAGE_SIZE;
   frames       = (uint32_t *)kmalloc(INDEX_FROM_BIT(frames_count));
-  memset((void *)frames, INDEX_FROM_BIT(frames_count), 0);
+  memset((void *)frames, INDEX_FROM_BIT(frames_count), 0x0);
 
   /* Make a page directory. */
   kernel_directory  = kcreate_a(struct page_directory_s, 1);
-  memset((void *)kernel_directory, sizeof(struct page_directory_s), 0x0);
-  current_directory = kernel_directory;
+  memset((uint8_t*)kernel_directory, sizeof(struct page_directory_s), 0x0);
+  kernel_directory->directory_address = (uint32_t)kernel_directory->physical_address;
 
   /* Map some pages in the kernel heap area, using get_page() not
    * alloc_frame(). This causes struct page_table_s' to be created where
@@ -133,12 +168,14 @@ void init_paging()
   register_interrupt_handler(14, page_fault);
 
   /* Enable paging. */
-  k_message("Kernel dir: %p", kernel_directory);
   switch_page_directory(kernel_directory);
 
   /* Initialise the kernel heap. */
   kernel_heap = heap_create(KHEAP_START, KHEAP_START + KHEAP_INITIAL_SIZE,
                             KHEAP_MAX, 0, 0);
+
+  current_directory = clone_directory(kernel_directory);
+  switch_page_directory(current_directory);
 }
 
 /* Allocate a frame. */
@@ -164,7 +201,7 @@ void alloc_frame(struct page_s *page, int is_kernel, int is_writeable)
 /* Deallocate a frame. */
 void free_frame(struct page_s *page)
 {
-  frame_t frame;
+  uint32_t frame;
 
   if ((frame = page->frame)) {
     _clear_frame(frame);
@@ -172,12 +209,13 @@ void free_frame(struct page_s *page)
   }
 }
 
-void switch_page_directory(struct page_directory_s *directory)
+void switch_page_directory(struct page_directory_s *dir)
 {
   uint32_t cr0;
 
-  current_directory = directory;
-  __asm volatile("mov %0, %%cr3":: "r"(&directory->physical_address));
+  paging_debug("Switching page directory: %h -> %h", current_directory, dir);
+  current_directory = dir;
+  __asm volatile("mov %0, %%cr3":: "r"(dir->physical_address));
   __asm volatile("mov %%cr0, %0": "=r"(cr0));
   cr0 |= 0x80000000; /* Enable paging. */
   __asm volatile("mov %0, %%cr0":: "r"(cr0));
@@ -212,9 +250,46 @@ struct page_s *get_page(uint32_t address, enum create_page_e make,
   }
 }
 
-/* We don't want GCC complaining if we don't use the registers parameter. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
+struct page_directory_s *clone_directory(struct page_directory_s *src)
+{
+  struct page_directory_s *dir;
+  uint32_t dir_address;
+  uint32_t offset;
+  int i;
+
+  /* Make and zero a page directory and obtain its physical address. */
+  dir = kcreate_ap(struct page_directory_s, 1, &dir_address);
+  memset((uint8_t*)dir, sizeof(struct page_directory_s), 0x0);
+
+  /* Get the offset of physical_tables from the start of the struct
+   * page_directory_s. and add it the dir_address to get total offset. */
+  offset = (uint32_t)dir->physical_address - (uint32_t)dir;
+  dir->directory_address = dir_address + offset;
+
+  /* Iterate through the page tables. If the page table is in the kernel
+   * directory (i.e., it is a kernel page), do not make a new copy. */
+  for (i = 0; i < TABLES_IN_DIRECTORY; i++) {
+    if (!src->virtual_tables[i]) {
+      continue;
+    }
+
+    /* If the page table is in the kernel directory, take the existing
+     * pointer. */
+    if (kernel_directory->virtual_tables[i] == src->virtual_tables[i]) {
+      dir->virtual_tables[i] = src->virtual_tables[i];
+      dir->physical_address[i] = src->physical_address[i];
+    } else {
+      /* Copy the table. */
+      dir->virtual_tables[i] = clone_table(src->virtual_tables[i],
+                                           &dir_address);
+      dir->physical_address[i] = dir_address | 0x07;
+    }
+  }
+
+  paging_debug("Cloned page directory %h -> %h", src, dir);
+
+  return dir;
+}
 
 void page_fault(struct registers_s registers)
 {
@@ -223,7 +298,7 @@ void page_fault(struct registers_s registers)
   int rw;
   int us;
   int reserved;
-  int id;
+  /* int  id; */
 
   /* A page fault has occurred. The fault address is stored in the CR2
    * register. */
@@ -234,7 +309,7 @@ void page_fault(struct registers_s registers)
   rw       = registers.error_code & 0x2;
   us       = registers.error_code & 0x4;
   reserved = registers.error_code & 0x8;
-  id       = registers.error_code & 0x10;
+  /* id       = registers.error_code & 0x10; */
 
   k_critical("PAGE FAULT: %h ", faulting_address);
 
@@ -257,8 +332,5 @@ void page_fault(struct registers_s registers)
   }
 
   tty_write("\n");
-
   panic("Page fault");
 }
-
-#pragma GCC diagnostic pop /* ignored "-Wunused-parameter" */
