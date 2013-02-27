@@ -2,9 +2,6 @@
 # tags.sh - Generate TAGS file.
 #           Usage tags.sh <directory ...>
 
-# Be very verbose.
-set -x
-
 if [ -z "$1" ]
 then
     echo "Usage: $(basename $0) <directory ...>" >&2
