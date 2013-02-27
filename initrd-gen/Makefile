@@ -10,9 +10,11 @@ OBJECT_FILES := $(patsubst %.c,%.o,$(SOURCES_C))
 all: $(TARGET)
 
 $(TARGET): $(OBJECT_FILES)
+	@echo '  CCLD     '$@
 	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJECT_FILES)
 
 .c.o:
+	@echo '  CC       '$<
 	$(CC) $(CFLAGS) -c $<
 
 .PHONY: clean mrproper

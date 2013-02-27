@@ -4,7 +4,12 @@
 # Use V=1 to see full verbosity.
 QUIET_  = @
 QUIET   = $(QUIET_$(V))
-export QUIET_ QUIET
+
+ifeq ($(strip $(V)),)
+MAKE_QUIET = -s
+endif
+
+export QUIET_ QUIET MAKE_QUIET
 
 # Configuration variables (exported to sub-makes).
 export AS      := nasm
@@ -15,7 +20,7 @@ export LESS    := less
 export LOSETUP := losetup
 export MKDIR   := mkdir
 export MOUNT   := mount
-export RM      := rm -fv
+export RM      := rm -f
 export RMDIR   := rmdir
 export SHELL   := /bin/bash
 export SUDO    := sudo
@@ -51,16 +56,17 @@ SOURCEDIRS := nos initrd-gen
 # Build targets.
 .PHONY: all $(SOURCEDIRS) help
 
-all: $(SOURCEDIRS) floppy
+all: $(SOURCEDIRS) floppy TAGS
 
 $(SOURCEDIRS):
-	$(QUIET)$(MAKE) -C$@ all
+	@echo '  MAKE     '$@
+	$(QUIET)$(MAKE) $(MAKE_QUIET) -C$@ all
 
 # Simulation targets.
 .PHONY: log run floppy initrd
 
 log:
-	less bochs/bochsout.txt
+	$(QUIET)less bochs/bochsout.txt
 
 run:
 	$(QUIET)$(SHELL) ./scripts/bochs.sh
@@ -69,28 +75,33 @@ run:
 MOUNTPOINT = loop0
 
 floppy: initrd
-	$(QUIET)$(SHELL) ./scripts/mkfloppy.sh
+	@echo '  GEN      floppy.img'
+	$(QUIET)$(SHELL) ./scripts/mkfloppy.sh >/dev/null
 
 initrd:
-	$(QUIET)$(SHELL) ./scripts/mkinitrd.sh
+	@echo '  GEN      initrd.img'
+	$(QUIET)$(SHELL) ./scripts/mkinitrd.sh >/dev/null
 
 # Clean targets.
 .PHONY: clean mrproper
 
 clean:
-	$(QUIET)for d in $(SUBDIRS); do \
-		$(MAKE) -C $$d $@; \
+	$(QUIET)for d in $(SUBDIRS); do 	 \
+		echo '  CLEAN    '$$(basename $$d); \
+		$(MAKE) $(MAKE_QUIET) -C $$d $@; \
 	done
 
 mrproper:
-	$(QUIET)for d in $(SUBDIRS); do \
-		$(MAKE) -C $$d $@; \
+	$(QUIET)for d in $(SUBDIRS); do 	 \
+		echo '  CLEAN    '$$(basename $$d); \
+		$(MAKE) $(MAKE_QUIET) -C $$d $@; \
 	done
 
 # Miscellaneous targets.
 .PHONY: TAGS mount umount help
 
 TAGS:
+	@echo '  TAGS     '
 	$(QUIET)$(SHELL) ./scripts/tags.sh $(SOURCEDIRS)
 
 mount:

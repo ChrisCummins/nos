@@ -1,5 +1,3 @@
-.PHONY: all log clean
+.PHONY: all clean mrproper
 
-all:
-
-clean:
+all clean mrproper:
