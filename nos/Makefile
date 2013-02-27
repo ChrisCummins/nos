@@ -94,11 +94,11 @@ install:
 	$(SUDO) $(CP) $(TARGET) ../floppy/kernel
 
 # Compilation rules.
-.c.o:
-	$(CC) $(CFLAGS) -c $<
+$(OBJDIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-.s.o:
-	$(AS) $(ASFLAGS) $<
+$(OBJDIR)/%.o: %.s
+	$(AS) $(ASFLAGS) -c -o $@ $<
 
 # Clean up binaries and object files.
 mrproper clean:
