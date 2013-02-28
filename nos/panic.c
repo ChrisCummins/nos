@@ -1,6 +1,6 @@
-#include <nos/panic.h>
+#include <panic.h>
 
-#include <nos/kstream.h>
+#include <kstream.h>
 
 #define DISABLE_INTERRUPTS __asm volatile("cli")
 #define CPU_HALT for(;;)

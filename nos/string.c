@@ -1,6 +1,6 @@
-#include <nos/string.h>
+#include <string.h>
 
-#include <nos/kstream.h>
+#include <kstream.h>
 
 /* Return the length of a string. If passed a NULL pointer, returns -1. */
 size_t strlen(const char *string)

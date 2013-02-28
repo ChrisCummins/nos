@@ -1,7 +1,7 @@
 #ifndef _FS_H
 #define _FS_H
 
-#include <nos/types.h>
+#include <types.h>
 
 /* fs_nodes->flags values. */
 #define FS_FILE        0x01

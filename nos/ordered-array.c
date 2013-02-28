@@ -1,10 +1,10 @@
-#include <nos/ordered-array.h>
+#include <ordered-array.h>
 
-#include <nos/assert.h>
-#include <nos/kheap.h>
-#include <nos/kstream.h>
-#include <nos/string.h>
-#include <nos/util.h>
+#include <assert.h>
+#include <kheap.h>
+#include <kstream.h>
+#include <string.h>
+#include <util.h>
 
 sint8_t default_predicate(type_t a, type_t b)
 {

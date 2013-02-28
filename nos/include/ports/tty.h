@@ -1,7 +1,7 @@
 #ifndef _PORTS_TTY_H
 #define _PORTS_TTY_H
 
-#include <nos/port.h>
+#include <port.h>
 
 /* Port addresses. */
 #define TTY_COMMAND_PORT 0x3D4

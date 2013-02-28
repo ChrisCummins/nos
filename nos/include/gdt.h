@@ -1,7 +1,7 @@
 #ifndef _GDT_H
 #define _GDT_H
 
-#include <nos/types.h>
+#include <types.h>
 
 struct gdt_entry_s {
   uint16_t limit_low;      /* The lower 16 bits of the limit. */

@@ -1,8 +1,8 @@
 #ifndef _TTY_H
 #define _TTY_H
 
-#include <nos/types.h>
-#include <nos/tty/colours.h>
+#include <types.h>
+#include <tty/colours.h>
 
 void init_tty(void);
 

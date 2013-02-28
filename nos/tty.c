@@ -1,7 +1,7 @@
-#include <nos/tty.h>
-#include <nos/port.h>
-#include <nos/tty/ascii.h>
-#include <nos/util.h>
+#include <tty.h>
+#include <port.h>
+#include <tty/ascii.h>
+#include <util.h>
 
 /* The display can be thought of as a two dimension array of characters,
  * arranged into rows and columns. These values dicatate the size of each. */

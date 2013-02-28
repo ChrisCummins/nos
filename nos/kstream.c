@@ -1,7 +1,7 @@
-#include <nos/kstream.h>
+#include <kstream.h>
 
-#include <nos/string.h>
-#include <nos/tty.h>
+#include <string.h>
+#include <tty.h>
 
 /* Some colours. */
 #define KSTREAM_NORMAL_BACKGROUND    TTY_COLOUR_BLACK

@@ -1,15 +1,15 @@
-#include <nos/assert.h>
-#include <nos/initrd.h>
-#include <nos/fs.h>
-#include <nos/gdt.h>
-#include <nos/idt.h>
-#include <nos/tty.h>
-#include <nos/timer.h>
-#include <nos/multiboot.h>
-#include <nos/paging.h>
-#include <nos/string.h>
-#include <nos/kstream.h>
-#include <nos/kheap.h>
+#include <assert.h>
+#include <initrd.h>
+#include <fs.h>
+#include <gdt.h>
+#include <idt.h>
+#include <tty.h>
+#include <timer.h>
+#include <multiboot.h>
+#include <paging.h>
+#include <string.h>
+#include <kstream.h>
+#include <kheap.h>
 
 /* Defined in ./kheap.c. */
 extern uint32_t placement_address;

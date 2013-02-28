@@ -1,8 +1,8 @@
 #ifndef _KHEAP_H
 #define _KHEAP_H
 
-#include <nos/types.h>
-#include <nos/ordered-array.h>
+#include <types.h>
+#include <ordered-array.h>
 
 /* Limits and characteristics of the heap. These are arbritary and
  * customiseable values. */

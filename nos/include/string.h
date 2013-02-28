@@ -1,7 +1,7 @@
 #ifndef _STRING_H
 #define _STRING_H
 
-#include <nos/types.h>
+#include <types.h>
 
 #define is_digit(c) ((c) >= '0' && (c) <= '9')
 

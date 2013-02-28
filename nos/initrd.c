@@ -1,11 +1,11 @@
-#include <nos/initrd.h>
+#include <initrd.h>
 
-#include <nos/assert.h>
-#include <nos/fs.h>
-#include <nos/kheap.h>
-#include <nos/kstream.h>
-#include <nos/string.h>
-#include <nos/types.h>
+#include <assert.h>
+#include <fs.h>
+#include <kheap.h>
+#include <kstream.h>
+#include <string.h>
+#include <types.h>
 
 #define HEADER_ID  0xCC
 #define is_header(h)  ((((struct initrd_file_header_s*)h)->id == HEADER_ID) \

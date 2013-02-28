@@ -1,7 +1,7 @@
-#include <nos/timer.h>
-#include <nos/isr.h>
-#include <nos/kstream.h>
-#include <nos/port.h>
+#include <timer.h>
+#include <isr.h>
+#include <kstream.h>
+#include <port.h>
 
 #define PIT_CLOCK_FREQUENCY 1193180
 

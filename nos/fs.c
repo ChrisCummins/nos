@@ -1,4 +1,4 @@
-#include <nos/fs.h>
+#include <fs.h>
 
 /* Filesystem root. */
 struct fs_node_s *fs_root = 0;

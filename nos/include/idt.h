@@ -1,7 +1,7 @@
 #ifndef _IDT_H
 #define _IDT_H
 
-#include <nos/types.h>
+#include <types.h>
 
 struct idt_entry_s {
   uint16_t base_low;       /* The lower 16 bits of the interrupt address. */

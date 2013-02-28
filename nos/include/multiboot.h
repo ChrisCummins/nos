@@ -1,7 +1,7 @@
 #ifndef _MULTIBOOT_H
 #define _MULTIBOOT_H
 
-#include <nos/types.h>
+#include <types.h>
 
 #define MULTIBOOT_FLAG_MEM     0x001
 #define MULTIBOOT_FLAG_DEVICE  0x002

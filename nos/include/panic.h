@@ -1,7 +1,7 @@
 #ifndef _PANIC_H
 #define _PANIC_H
 
-#include <nos/types.h>
+#include <types.h>
 
 extern void panic_halt(const char *message, const char *file, uint32_t line);
 

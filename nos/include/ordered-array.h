@@ -1,7 +1,7 @@
 #ifndef _ORDERED_ARRAY_H
 #define _ORDERED_ARRAY_H
 
-#include <nos/types.h>
+#include <types.h>
 
 /* Predicates must return non-zero if the first argument is greater than the
  * second. If the second argument is less than the first, return zero. */

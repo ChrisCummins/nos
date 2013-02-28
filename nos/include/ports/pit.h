@@ -1,7 +1,7 @@
 #ifndef _PORTS_PIT_H
 #define _PORTS_PIT_H
 
-#include <nos/port.h>
+#include <port.h>
 
 /* Port addresses. */
 #define PIT_CHANNEL_0_DATA 0x40

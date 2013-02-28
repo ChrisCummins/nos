@@ -29,14 +29,9 @@ export UMOUNT  := mount
 # Include directories.
 topdir  := $(PWD)
 
-INCLUDE := \
-           -I $(topdir) \
-	   $(NULL)
-
 # Compiler flags.
 CFLAGS  := \
 	   -DDEBUG \
-	   $(INCLUDE) \
 	   -pedantic \
 	   -std=c99 \
 	   -Wall \

@@ -1,9 +1,9 @@
 #ifndef _PAGING_H
 #define _PAGING_H
 
-#include <nos/isr.h>
-#include <nos/kstream.h>
-#include <nos/types.h>
+#include <isr.h>
+#include <kstream.h>
+#include <types.h>
 
 /* Define this for paging debugging. */
 #undef PAGING_DEBUG

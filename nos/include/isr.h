@@ -1,7 +1,7 @@
 #ifndef _ISR_H
 #define _ISR_H
 
-#include <nos/types.h>
+#include <types.h>
 
 /* IRQ mappings. */
 #define IRQ0  32

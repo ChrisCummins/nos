@@ -1,4 +1,4 @@
-#include <nos/port.h>
+#include <port.h>
 
 void init_irq(void)
 {

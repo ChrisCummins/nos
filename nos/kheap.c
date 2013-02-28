@@ -1,9 +1,9 @@
-#include <nos/kheap.h>
+#include <kheap.h>
 
-#include <nos/assert.h>
-#include <nos/paging.h>
-#include <nos/util.h>
-#include <nos/kstream.h>
+#include <assert.h>
+#include <paging.h>
+#include <util.h>
+#include <kstream.h>
 
 /* Heap functions. */
 #define is_supervisor_only(heap) ((heap->supervisor_only) ? 1 : 0)

@@ -1,4 +1,4 @@
-#include <nos/port.h>
+#include <port.h>
 
 void out_byte(port_t port, uint8_t value)
 {

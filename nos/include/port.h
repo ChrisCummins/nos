@@ -1,10 +1,11 @@
 #ifndef _PORT_H
 #define _PORT_H
 
-#include <nos/types.h>
-#include <nos/ports/pic.h>
-#include <nos/ports/pit.h>
-#include <nos/ports/tty.h>
+#include <ports/pic.h>
+#include <ports/pit.h>
+#include <ports/tty.h>
+
+#include <types.h>
 
 typedef unsigned short port_t;
 

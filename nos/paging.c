@@ -1,11 +1,11 @@
-#include <nos/paging.h>
+#include <paging.h>
 
-#include <nos/kheap.h>
-#include <nos/kstream.h>
-#include <nos/panic.h>
-#include <nos/string.h>
-#include <nos/tty.h>
-#include <nos/util.h>
+#include <kheap.h>
+#include <kstream.h>
+#include <panic.h>
+#include <string.h>
+#include <tty.h>
+#include <util.h>
 
 /* Macros used in the bitset algorithms. */
 #define INDEX_FROM_BIT(a)  (a / (8 * 4))

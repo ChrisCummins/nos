@@ -1,5 +1,5 @@
-#include <nos/gdt.h>
-#include <nos/kstream.h>
+#include <gdt.h>
+#include <kstream.h>
 
 extern void gdt_flush(uint32_t);
 

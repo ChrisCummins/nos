@@ -1,7 +1,7 @@
 #ifndef _INITRD_H
 #define _INITRD_H
 
-#include <nos/types.h>
+#include <types.h>
 
 struct initrd_header_s {
   uint32_t file_count; /* The number of files in the ramdisk image. */

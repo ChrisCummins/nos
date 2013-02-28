@@ -1,7 +1,7 @@
 #ifndef _PORTS_PIC_H
 #define _PORTS_PIC_H
 
-#include <nos/port.h>
+#include <port.h>
 
 /* Port addresses. */
 #define PIC_MASTER_COMMAND_PORT 0x20

@@ -1,8 +1,8 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
-#include <nos/panic.h>
-#include <nos/types.h>
+#include <panic.h>
+#include <types.h>
 
 #define _INTSIZEOF(n)    ((sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1))
 

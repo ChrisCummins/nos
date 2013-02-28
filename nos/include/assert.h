@@ -1,7 +1,7 @@
 #ifndef _ASSERT_H
 #define _ASSERT_H
 
-#include <nos/types.h>
+#include <types.h>
 
 extern void panic_assert(const char *file, uint32_t line, const char *expression);
 

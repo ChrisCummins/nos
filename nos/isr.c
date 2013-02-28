@@ -1,6 +1,6 @@
-#include <nos/isr.h>
-#include <nos/kstream.h>
-#include <nos/port.h>
+#include <isr.h>
+#include <kstream.h>
+#include <port.h>
 
 isr_t interrupt_handlers[256];
 
