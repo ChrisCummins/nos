@@ -12,9 +12,9 @@ sint8_t default_predicate(type_t a, type_t b);
 
 /* An ordered array. */
 struct ordered_array_s {
-  type_t     *data;      /* Pointer to array's first element. */
-  uint32_t    size;      /* The size (length) of the array.   */
-  uint32_t    max_size;  /* size cannot exceed this value.    */
+  type_t *data;          /* Pointer to array's first element. */
+  uint32_t size;         /* The size (length) of the array.   */
+  uint32_t max_size;     /* size cannot exceed this value.    */
   predicate_t predicate; /* Predicate function.               */
 };
 
@@ -30,8 +30,8 @@ struct ordered_array_s ordered_array_place(void *address, uint32_t max_size,
 void ordered_array_destroy(struct ordered_array_s *array);
 
 /* List functions. */
-void   ordered_array_insert      (struct ordered_array_s *array, type_t item);
+void ordered_array_insert(struct ordered_array_s *array, type_t item);
 type_t ordered_array_lookup_index(struct ordered_array_s *array, uint32_t index);
-void   ordered_array_remove_index(struct ordered_array_s *array, uint32_t index);
+void ordered_array_remove_index(struct ordered_array_s *array, uint32_t index);
 
 #endif /* _ORDERED_ARRAY_H */

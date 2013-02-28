@@ -4,19 +4,17 @@
 #include <types.h>
 
 struct idt_entry_s {
-  uint16_t base_low;       /* The lower 16 bits of the interrupt address. */
-  uint16_t selector;       /* Kernel segment selector. */
-  uint8_t  always0;
-  uint8_t  flags;
-  uint16_t base_high;      /* The upper 16 bits of the address to jump to. */
-} __attribute__((packed)); /* Do not allow GCC to change any of the alignment
-                            * within the structure. */
+	uint16_t base_low;  /* The lower 16 bits of the interrupt address. */
+	uint16_t selector;  /* Kernel segment selector. */
+	uint8_t  always0;
+	uint8_t  flags;
+	uint16_t base_high; /* The upper 16 bits of the address to jump to. */
+} __attribute__((packed));
 
 struct idt_pointer_s {
-  uint16_t limit;
-  uint32_t base;           /* The address of the idt_entry_s first element. */
-} __attribute__((packed)); /* Do not allow GCC to change any of the alignment
-                            * within the structure. */
+	uint16_t limit;
+	uint32_t base; /* The address of the idt_entry_s first element. */
+} __attribute__((packed));
 
 /* GDT access flag positions. */
 #define IDT_FLAGS_P_SHIFT     7

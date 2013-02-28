@@ -24,28 +24,28 @@
 typedef uint32_t register_t;
 
 struct registers_s {
-  /* Data segment selector. */
-  register_t ds;
+	/* Data segment selector. */
+	register_t ds;
 
-  /* Pushed by pusha. */
-  register_t edi;
-  register_t esi;
-  register_t ebp;
-  register_t esp;
-  register_t ebx;
-  register_t edx;
-  register_t ecx;
-  register_t eax;
+	/* Pushed by pusha. */
+	register_t edi;
+	register_t esi;
+	register_t ebp;
+	register_t esp;
+	register_t ebx;
+	register_t edx;
+	register_t ecx;
+	register_t eax;
 
-  register_t interrupt_number;
-  register_t error_code;
+	register_t interrupt_number;
+	register_t error_code;
 
-  /* Pushed by the processor automatically. */
-  register_t eip;
-  register_t cs;
-  register_t eflags;
-  register_t useresp;
-  register_t ss;
+	/* Pushed by the processor automatically. */
+	register_t eip;
+	register_t cs;
+	register_t eflags;
+	register_t useresp;
+	register_t ss;
 };
 
 /* ISR handler function. */

@@ -4,7 +4,7 @@
 #include <panic.h>
 #include <types.h>
 
-#define _INTSIZEOF(n)    ((sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1))
+#define _INTSIZEOF(n) ((sizeof(n) + sizeof(int) - 1) & ~(sizeof(int) - 1))
 
 /* Byte */
 #define high_nibble(n) ((n) << 4)
