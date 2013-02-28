@@ -38,7 +38,7 @@ static uint32_t _initrd_read(struct fs_node_s *node, uint32_t offset,
     read_length = header.size - offset;
   }
 
-  memcpy(buffer, read_length, (uint8_t *)(header.offset + offset));
+  memcpy(buffer, (uint8_t *)(header.offset + offset), read_length);
 
   return read_length;
 }

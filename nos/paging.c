@@ -98,7 +98,7 @@ static struct page_table_s *clone_table(struct page_table_s *src,
 
   /* Make and zero a page aligned table. */
   table = kcreate_ap(struct page_table_s, 1, physical_address);
-  memset((uint8_t *)table, sizeof(struct page_directory_s), 0x0);
+  memset((uint8_t *)table, 0x0, sizeof(struct page_directory_s));
 
   /* Iterate over the table entries. */
   for (i = 0; i < PAGES_IN_TABLE; i++) {
@@ -131,11 +131,11 @@ void init_paging()
   /* Get the number of frames. */
   frames_count = MEMORY_END_PAGE / PAGE_SIZE;
   frames       = (uint32_t *)kmalloc(INDEX_FROM_BIT(frames_count));
-  memset((void *)frames, INDEX_FROM_BIT(frames_count), 0x0);
+  memset((void *)frames, 0x0, INDEX_FROM_BIT(frames_count));
 
   /* Make a page directory. */
   kernel_directory  = kcreate_a(struct page_directory_s, 1);
-  memset((uint8_t*)kernel_directory, sizeof(struct page_directory_s), 0x0);
+  memset((uint8_t*)kernel_directory, 0x0, sizeof(struct page_directory_s));
   kernel_directory->directory_address = (uint32_t)kernel_directory->physical_address;
 
   /* Map some pages in the kernel heap area, using get_page() not
@@ -259,7 +259,7 @@ struct page_directory_s *clone_directory(struct page_directory_s *src)
 
   /* Make and zero a page directory and obtain its physical address. */
   dir = kcreate_ap(struct page_directory_s, 1, &dir_address);
-  memset((uint8_t*)dir, sizeof(struct page_directory_s), 0x0);
+  memset((uint8_t*)dir, 0x0, sizeof(struct page_directory_s));
 
   /* Get the offset of physical_tables from the start of the struct
    * page_directory_s. and add it the dir_address to get total offset. */

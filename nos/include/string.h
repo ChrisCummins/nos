@@ -18,7 +18,7 @@ char *strcpy(char *dest, const char *src);
  * respectively, to be less than, to match, or be greater than s2. */
 int strcmp(const char *s1, const char *s2);
 
-uint8_t *memcpy(uint8_t *destination, uint32_t length, const uint8_t *src);
-uint8_t *memset(uint8_t *destination, uint32_t length, uint8_t value);
+uint8_t *memcpy(uint8_t *destination, const uint8_t *src, uint32_t length);
+uint8_t *memset(uint8_t *destination, uint8_t value, uint32_t length);
 
 #endif /* _STRING_H */

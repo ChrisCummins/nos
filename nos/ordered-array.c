@@ -23,7 +23,7 @@ struct ordered_array_s ordered_array_new(uint32_t max_size,
   array.predicate = predicate;
 
   /* Zero all array data. */
-  memset((void *)array.data, (sizeof(type_t) * max_size), 0x0);
+  memset((void *)array.data, 0x0, (sizeof(type_t) * max_size));
 
   return array;
 }
@@ -39,7 +39,7 @@ struct ordered_array_s ordered_array_place(void *address, uint32_t max_size,
   array.predicate = predicate;
 
   /* Zero all array data. */
-  memset((void *)array.data, (sizeof(type_t) * max_size), 0x0);
+  memset((void *)array.data, 0x0, (sizeof(type_t) * max_size));
 
   return array;
 }
