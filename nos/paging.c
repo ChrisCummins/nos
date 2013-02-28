@@ -53,20 +53,6 @@ static void _clear_frame(uint32_t frame_address)
 	frames[i] &= ~(0x1 << offset);
 }
 
-/* Test if a bit is set. */
-/* static uint32_t _test_frame(uint32_t frame_address) */
-/* { */
-/*   uint32_t  frame; */
-/*   uint32_t index; */
-/*   uint32_t offset; */
-
-/*   frame  = frame_address / PAGE_SIZE; */
-/*   index  = INDEX_FROM_BIT(frame); */
-/*   offset = OFFSET_FROM_BIT(frame); */
-
-/*   return (frames[index] & (0x1 << offset)); */
-/* } */
-
 /* Find the first free frame. */
 static uint32_t _first_frame(void)
 {
