@@ -8,66 +8,57 @@
 #include <util.h>
 
 /* Macros used in the bitset algorithms. */
-#define INDEX_FROM_BIT(a)  (a / (8 * 4))
+#define INDEX_FROM_BIT(a) (a / (8 * 4))
 #define OFFSET_FROM_BIT(a) (a % (8 * 4))
 
 /* Defined in ./process.s. */
 extern void copy_page_physical(uint32_t src, uint32_t dest);
 
-struct page_directory_s *kernel_directory  = 0;
+struct page_directory_s *kernel_directory = 0;
 struct page_directory_s *current_directory = 0;
 
 /* A bitset of frames, used or free. */
-static uint32_t *frames;
-static uint32_t frames_count;
+uint32_t *frames;
+uint32_t frames_count;
 
 /* Defined in ./kheap.c. */
-extern uint32_t       placement_address;
+extern uint32_t placement_address;
 extern struct heap_s *kernel_heap;
 
 /* Set a bit in a frame's bitset. */
 static void _set_frame(uint32_t frame_address)
 {
-	uint32_t frame;
-	uint32_t i;
-	uint32_t offset;
+	uint32_t frame = frame_address / PAGE_SIZE;
+	uint32_t index = INDEX_FROM_BIT(frame);
+	uint32_t offset = OFFSET_FROM_BIT(frame);
 
-	frame = frame_address / PAGE_SIZE;
-	i = INDEX_FROM_BIT(frame);
-	offset = OFFSET_FROM_BIT(frame);
-
-	frames[i] |= (0x1 << offset);
+	frames[index] |= (0x1 << offset);
 }
 
 /* Clear a bit in a frame's bitset. */
 static void _clear_frame(uint32_t frame_address)
 {
-	uint32_t frame;
-	uint32_t i;
-	uint32_t offset;
+	uint32_t frame = frame_address / PAGE_SIZE;
+	uint32_t index = INDEX_FROM_BIT(frame);
+	uint32_t offset = OFFSET_FROM_BIT(frame);
 
-	frame = frame_address / PAGE_SIZE;
-	i = INDEX_FROM_BIT(frame);
-	offset = OFFSET_FROM_BIT(frame);
-
-	frames[i] &= ~(0x1 << offset);
+	frames[index] &= ~(0x1 << offset);
 }
 
 /* Find the first free frame. */
 static uint32_t _first_frame(void)
 {
-	uint32_t i;
-	uint32_t j;
+	uint32_t i, j;
 
 	for (i = 0; i < INDEX_FROM_BIT(frames_count); i++) {
-		if (frames[i] != 0xFFFFFFFF) {
+		if (frames[i] != MEMORY_END_FRAME) {
 			/* At least one bit is free in this frame. */
 			for (j = 0; j < (sizeof(uint32_t) * 8); j++) {
 				uint32_t test;
 
 				test = 0x1 << j;
 				if (!(frames[i] & test)) {
-					return ((i * sizeof(uint32_t) * 8) + j);
+					return(i * sizeof(uint32_t) * 8 + j);
 				}
 			}
 		}
@@ -88,7 +79,8 @@ static struct page_table_s *clone_table(struct page_table_s *src,
 
 	/* Iterate over the table entries. */
 	for (i = 0; i < PAGES_IN_TABLE; i++) {
-		/* If the source entry has a frame associated with it, then copy it. */
+		/* If the source entry has a frame associated with it, then copy
+		 * it. */
 		if (src->pages[i].frame) {
 			/* Get a new frame. */
 			alloc_frame(&table->pages[i], 0, 0);
@@ -165,72 +157,73 @@ void init_paging()
 }
 
 /* Allocate a frame. */
-void alloc_frame(struct page_s *page, int is_kernel, int is_writeable)
+void alloc_frame(struct page_s *p, int is_kernel, int is_writeable)
 {
-	if (page->frame == 0) {
+	if (p->frame == 0) {
 		uint32_t index;
 
 		index = _first_frame();
 		if (index == (uint32_t)-1) {
-			k_critical("Unable to allocate a frame for page %p", page);
+			k_critical("Unable to allocate a frame for p %p", p);
 			panic("Out of Memory");
 		}
 
 		_set_frame(index * PAGE_SIZE);
-		page->present = 1;
-		page->rw      = (is_writeable) ? 1 : 0;
-		page->user    = (is_kernel)    ? 1 : 0;
-		page->frame   = index;
+		p->present = 1;
+		p->rw = (is_writeable) ? 1 : 0;
+		p->user = (is_kernel) ? 0 : 1;
+		p->frame = index;
 	}
 }
 
 /* Deallocate a frame. */
-void free_frame(struct page_s *page)
+void free_frame(struct page_s *p)
 {
 	uint32_t frame;
 
-	if ((frame = page->frame)) {
+	if ((frame = p->frame)) {
 		_clear_frame(frame);
-		page->frame = 0x0;
+		p->frame = 0x0;
 	}
 }
 
-void switch_page_directory(struct page_directory_s *dir)
+void switch_page_directory(struct page_directory_s *d)
 {
 	uint32_t cr0;
 
-	paging_debug("Switching page directory: %h -> %h", current_directory, dir);
-	current_directory = dir;
-	__asm volatile("mov %0, %%cr3":: "r"(dir->physical_address));
+	paging_debug("Switching page directory: %h -> %h",
+		     current_directory, d);
+	current_directory = d;
+	__asm volatile("mov %0, %%cr3":: "r"(d->physical_address));
 	__asm volatile("mov %%cr0, %0": "=r"(cr0));
 	cr0 |= 0x80000000; /* Enable paging. */
 	__asm volatile("mov %0, %%cr0":: "r"(cr0));
 }
 
 struct page_s *get_page(uint32_t address, enum create_page_e make,
-                        struct page_directory_s *directory)
+                        struct page_directory_s *d)
 {
-	uint32_t table_index;
+	uint32_t index;
 
 	/* Turn address into an index. */
 	address /= PAGE_SIZE;
 
 	/* Find the page table containing this address. */
-	table_index = address / TABLES_IN_DIRECTORY;
+	index = address / TABLES_IN_DIRECTORY;
 
-	if (directory->virtual_tables[table_index]) {
+	if (d->virtual_tables[index]) {
 		/* If this table is already assigned. */
-		return &directory->virtual_tables[table_index]->pages[address % PAGES_IN_TABLE];
+		return &d->virtual_tables[index]->pages[address % PAGES_IN_TABLE];
 	} else if (make == CREATE_PAGE) {
 		uint32_t temp;
 
 		/* Create a table. */
-		directory->virtual_tables[table_index] = kcreate_ap(struct page_table_s, 1,
-								    &temp);
-		directory->physical_address[table_index] = temp | 0x7; /* Present, R/W,
-									* User-space. */
+		d->virtual_tables[index] = kcreate_ap(struct page_table_s, 1,
+						      &temp);
+		d->physical_address[index] = temp | 0x7; /* Present, R/W,
+							  * User-space mask. */
 
-		return &directory->virtual_tables[table_index]->pages[address % PAGES_IN_TABLE];
+		return &d->virtual_tables[index]->pages[address % PAGES_IN_TABLE];
 	} else {
 		return 0;
 	}
@@ -238,20 +231,20 @@ struct page_s *get_page(uint32_t address, enum create_page_e make,
 
 struct page_directory_s *clone_directory(struct page_directory_s *src)
 {
-	struct page_directory_s *dir;
-	uint32_t dir_address;
+	struct page_directory_s *dest;
+	uint32_t dest_address;
 	uint32_t offset;
 	int i;
 
 	/* Make and zero a page directory and obtain its physical address. */
-	dir = kcreate_ap(struct page_directory_s, 1, &dir_address);
-	k_debug("dir_address: %h", dir_address);
-	memset((uint8_t*)dir, 0x0, sizeof(struct page_directory_s));
+	dest = kcreate_ap(struct page_directory_s, 1, &dest_address);
+	k_debug("dest_address: %h", dest_address);
+	memset((uint8_t*)dest, 0x0, sizeof(struct page_directory_s));
 
 	/* Get the offset of physical_tables from the start of the struct
-	 * page_directory_s. and add it the dir_address to get total offset. */
-	offset = (uint32_t)dir->physical_address - (uint32_t)dir;
-	dir->directory_address = dir_address + offset;
+	 * page_directory_s. and add it the dest_address to get total offset. */
+	offset = (uint32_t)dest->physical_address - (uint32_t)dest;
+	dest->directory_address = dest_address + offset;
 
 	/* Iterate through the page tables. If the page table is in the kernel
 	 * directory (i.e., it is a kernel page), do not make a new copy. */
@@ -263,20 +256,21 @@ struct page_directory_s *clone_directory(struct page_directory_s *src)
 		/* If the page table is in the kernel directory, take the existing
 		 * pointer. */
 		if (kernel_directory->virtual_tables[i] == src->virtual_tables[i]) {
-			dir->virtual_tables[i] = src->virtual_tables[i];
-			dir->physical_address[i] = src->physical_address[i];
+			dest->virtual_tables[i] = src->virtual_tables[i];
+			dest->physical_address[i] = src->physical_address[i];
 		} else {
 			uint32_t phys;
+
 			/* Copy the table. */
-			dir->virtual_tables[i] = clone_table(src->virtual_tables[i],
-							     &phys);
-			dir->physical_address[i] = phys | 0x07;
+			dest->virtual_tables[i] = clone_table(src->virtual_tables[i],
+							      &phys);
+			dest->physical_address[i] = phys | 0x07;
 		}
 	}
 
-	paging_debug("Cloned page directory %h -> %h", src, dir);
+	paging_debug("Cloned page directory %h -> %h", src, dest);
 
-	return dir;
+	return dest;
 }
 
 void page_fault(struct registers_s registers)

@@ -37,8 +37,8 @@ struct heap_s *heap_create(uint32_t start_address, uint32_t end_address,
                            uint8_t read_only);
 
 /* Allocate and free blocks. */
-void *heap_alloc(struct heap_s *heap, uint32_t size, uint8_t page_align);
-void heap_free(struct heap_s *heap, void *block);
+void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align);
+void free(struct heap_s *heap, void *block);
 
 /* Heap allocation and deallocation. */
 uint32_t kmalloc(uint32_t size);

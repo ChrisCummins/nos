@@ -5,9 +5,9 @@
 #include <util.h>
 #include <kstream.h>
 
-/* Heap functions. */
+/* Heap macro functions. */
 #define is_supervisor_only(heap) ((heap->supervisor_only) ? 1 : 0)
-#define is_read_only(heap) ((heap->read_only)       ? 1 : 0)
+#define is_read_only(heap) ((heap->read_only) ? 1 : 0)
 #define sizeof_heap(heap) (heap->end_address - heap->start_address)
 
 /* Block utility functions and constants. */
@@ -47,7 +47,7 @@
  *                         of a page, so that we are not pointing to previously
  *                         assigned memory.
  */
-#define align_to_page(a) (a) &= ALIGNMENT_MASK; (a) += PAGE_SIZE
+#define align_to_page(a) (a) &= (ALIGNMENT_MASK); (a) += (PAGE_SIZE)
 
 /* Used in the internal _kmalloc() function to determine whether to align
  * allocated memory to a page or not. */
@@ -63,19 +63,19 @@ extern uint32_t end;
 
 /* These are referenced in ./paging.c. */
 uint32_t placement_address = (uint32_t)&end;
-struct heap_s *kernel_heap;
+struct heap_s *kernel_heap = 0;
 
 static uint32_t _heap_kmalloc(uint32_t size, enum align_page_e align,
-                              uint32_t *physical_address)
+			      uint32_t *physical_address)
 {
-	type_t address = heap_alloc(kernel_heap, size, align);
+	void *address = alloc(kernel_heap, size, align);
 
-	if (physical_address != 0) {
+	if (physical_address) {
 		struct page_s *page = get_page((uint32_t)address, 0,
 					       kernel_directory);
 
 		*physical_address = (page->frame * PAGE_SIZE)
-			+ ((uint32_t)address & 0xFFF);
+			+ ((uint32_t)address & PAGE_OFFSET_MASK);
 	}
 
 	return (uint32_t)address;
@@ -91,6 +91,7 @@ static uint32_t _placement_kmalloc(uint32_t size, enum align_page_e align,
 		align_to_page(placement_address);
 	}
 
+	/* Return the physical address. */
 	if (physical_address) {
 		*physical_address = placement_address;
 	}
@@ -112,6 +113,31 @@ static uint32_t _kmalloc(uint32_t size, enum align_page_e align,
 	} else {
 		return _placement_kmalloc(size, align, physical_address);
 	}
+}
+
+uint32_t kmalloc(uint32_t size)
+{
+	return _kmalloc(size, NO_ALIGN, 0);
+}
+
+uint32_t kmalloc_a(uint32_t size)
+{
+	return _kmalloc(size, ALIGN_PAGE, 0);
+}
+
+uint32_t kmalloc_p(uint32_t size, uint32_t *physical_address)
+{
+	return _kmalloc(size, NO_ALIGN, physical_address);
+}
+
+uint32_t kmalloc_ap(uint32_t size, uint32_t *physical_address)
+{
+	return _kmalloc(size, ALIGN_PAGE, physical_address);
+}
+
+void kfree(void *block)
+{
+	free(kernel_heap, block);
 }
 
 /* Claim extra space for the heap. */
@@ -243,12 +269,12 @@ struct heap_s *heap_create(uint32_t start_address, uint32_t end_address,
                            uint32_t max_address, uint8_t supervisor_only,
                            uint8_t read_only)
 {
-	struct heap_s   *heap;
+	struct heap_s *heap;
 	struct header_s *hole;
 
 	/* If we're not page aligned, then what has it all been for?? */
 	assert((start_address % PAGE_SIZE) == 0);
-	assert((end_address   % PAGE_SIZE) == 0);
+	assert((end_address % PAGE_SIZE) == 0);
 
 	heap = kcreate(struct heap_s, 1);
 
@@ -283,7 +309,7 @@ struct heap_s *heap_create(uint32_t start_address, uint32_t end_address,
 
 /* Allocate a block of size 'size' from 'heap'. Align block to page if
  * 'page_align' is nonzero. */
-void *heap_alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
+void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 {
 	uint32_t total_size;
 	sint32_t i;
@@ -357,7 +383,7 @@ void *heap_alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 		}
 
 		/* We now have enough space, so can recurse. */
-		heap_alloc(heap, size, page_align);
+		alloc(heap, size, page_align);
 	}
 
 	/* We must now decide whether to split the hole we found into two
@@ -443,7 +469,7 @@ void *heap_alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 	return (void*)((uint32_t)block_header + HEADER_SIZE);
 }
 
-void heap_free(struct heap_s *heap, void *block)
+void free(struct heap_s *heap, void *block)
 {
 	struct header_s *header;
 	struct footer_s *footer;
@@ -556,29 +582,4 @@ void heap_free(struct heap_s *heap, void *block)
 	if (do_add == 1) {
 		ordered_array_insert(&heap->index, (void*)header);
 	}
-}
-
-uint32_t kmalloc(uint32_t size)
-{
-	return _kmalloc(size, NO_ALIGN, 0);
-}
-
-uint32_t kmalloc_a(uint32_t size)
-{
-	return _kmalloc(size, ALIGN_PAGE, 0);
-}
-
-uint32_t kmalloc_p(uint32_t size, uint32_t *physical_address)
-{
-	return _kmalloc(size, NO_ALIGN, physical_address);
-}
-
-uint32_t kmalloc_ap(uint32_t size, uint32_t *physical_address)
-{
-	return _kmalloc(size, ALIGN_PAGE, physical_address);
-}
-
-void kfree(void *block)
-{
-	heap_free(kernel_heap, block);
 }

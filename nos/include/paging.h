@@ -17,6 +17,10 @@
  * bits. */
 #define ALIGNMENT_MASK 0xFFFFF000
 
+/* A logical OR of an address with this mask will zero all but the trailing 12
+ * bits, leaving the offset into the page. */
+#define PAGE_OFFSET_MASK 0xFFF
+
 /* Determines whether an address is page aligned or not. To do so, it ANDs the
  * value with an alignment ask. If the address is page aligned, then the
  * alignment mask will mask off all nonzero digits. If the address does not fall
@@ -27,6 +31,9 @@
 #define PAGES_IN_TABLE 1024
 #define TABLES_IN_DIRECTORY 1024
 #define MEMORY_END_PAGE 0x01000000
+
+/* If we reach here, we're out of memory! */
+#define MEMORY_END_FRAME 0xFFFFFFFF
 
 #ifdef PAGING_DEBUG
 # define paging_debug(...) {				\
