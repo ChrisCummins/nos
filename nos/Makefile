@@ -22,6 +22,7 @@ HEADER_FILES  =              		\
 		ports/pic.h		\
 		ports/pit.h		\
 		ports/tty.h		\
+		sched/task.h		\
 		sched/sched.h		\
 		stdarg.h		\
 		string.h		\
@@ -47,6 +48,7 @@ SOURCES_C    :=				\
 		paging.c		\
 		panic.c			\
 		port.c			\
+		sched/task.c		\
 		sched/sched.c		\
 		string.c		\
 		timer.c			\

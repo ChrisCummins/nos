@@ -2,6 +2,7 @@
 #include <isr.h>
 #include <kstream.h>
 #include <port.h>
+#include <sched/task.h>
 
 #define PIT_CLOCK_FREQUENCY 1193180
 
@@ -13,8 +14,7 @@ static uint32_t tick = 0;
 
 static void _timer_callback(struct registers_s registers) {
 	tick++;
-
-	k_debug("Tick: %d", tick);
+	context_switch();
 }
 
 #pragma GCC diagnostic pop /* ignored "-Wunused-parameter" */

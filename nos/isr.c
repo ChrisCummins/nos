@@ -16,16 +16,12 @@ static void _execute_handler(struct registers_s registers) {
 /* Called from ./interrupts.s */
 void isr_handler(struct registers_s registers)
 {
-	k_debug("ISR[%h]", registers.interrupt_number);
-
 	_execute_handler(registers);
 }
 
 /* Called from ./interrupts.s */
 void irq_handler(struct registers_s registers)
 {
-	k_debug("ISQ[%h]", registers.interrupt_number);
-
 	/* If the interrupt originated form the slave PIC, then an EOI signal
 	 * must be sent to the slave PIC. */
 	if (registers.interrupt_number >= 40) {

@@ -143,8 +143,13 @@ void kfree(void *block)
 /* Claim extra space for the heap. */
 static void _heap_expand(struct heap_s *heap, uint32_t new_size)
 {
-	uint32_t old_size = sizeof_heap(heap);
-	uint32_t i = old_size;
+	uint32_t old_size;
+	uint32_t i;
+
+	assert(heap);
+
+	old_size = sizeof_heap(heap);
+	i = old_size;
 
 	assert(new_size > old_size);
 

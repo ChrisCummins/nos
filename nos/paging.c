@@ -67,8 +67,8 @@ static uint32_t _first_frame(void)
 	return 0;
 }
 
-static struct page_table_s *clone_table(struct page_table_s *src,
-                                        uint32_t *physical_address)
+static struct page_table_s *_clone_table(struct page_table_s *src,
+					 uint32_t *physical_address)
 {
 	struct page_table_s *table;
 	int i;
@@ -108,7 +108,7 @@ void init_paging()
 
 	/* Get the number of frames. */
 	frames_count = MEMORY_END_PAGE / PAGE_SIZE;
-	frames       = (uint32_t *)kmalloc(INDEX_FROM_BIT(frames_count));
+	frames = (uint32_t *)kmalloc(INDEX_FROM_BIT(frames_count));
 	memset((void *)frames, 0x0, INDEX_FROM_BIT(frames_count));
 
 	/* Make a page directory. */
@@ -194,7 +194,7 @@ void switch_page_directory(struct page_directory_s *d)
 	paging_debug("Switching page directory: %h -> %h",
 		     current_directory, d);
 	current_directory = d;
-	__asm volatile("mov %0, %%cr3":: "r"(d->physical_address));
+	__asm volatile("mov %0, %%cr3":: "r"(d->directory_address));
 	__asm volatile("mov %%cr0, %0": "=r"(cr0));
 	cr0 |= 0x80000000; /* Enable paging. */
 	__asm volatile("mov %0, %%cr0":: "r"(cr0));
@@ -262,8 +262,8 @@ struct page_directory_s *clone_directory(struct page_directory_s *src)
 			uint32_t phys;
 
 			/* Copy the table. */
-			dest->virtual_tables[i] = clone_table(src->virtual_tables[i],
-							      &phys);
+			dest->virtual_tables[i] = _clone_table(src->virtual_tables[i],
+							       &phys);
 			dest->physical_address[i] = phys | 0x07;
 		}
 	}

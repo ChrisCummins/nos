@@ -28,6 +28,7 @@ mboot:
 [EXTERN kmain]			   ; Defined in ./main.c
 
 start:
+	push    esp             ; Grab our SBP
 	push	ebx		; load multiboot header file
 ; Kernel:
 	cli
