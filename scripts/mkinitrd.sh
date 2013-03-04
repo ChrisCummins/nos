@@ -4,7 +4,7 @@
 INITRD=initrd
 OUTPUT_DIR=floppy
 INPUT_DIR=initrd
-INITRDGEN=./initrd-gen/initrd-gen
+INITRDGEN=./tools/initrd-gen
 
 usage () {
     echo "Usage: $(basename $0) [--help]"

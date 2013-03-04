@@ -3,6 +3,7 @@ romimage: file=/usr/share/bochs/BIOS-bochs-latest
 vgaromimage: file=/usr/share/bochs/VGABIOS-elpin-2.40
 floppya: 1_44=/dev/loop0, status=inserted
 boot: a
+log: bochs/log
 mouse: enabled=0
 clock: sync=realtime
 cpu: ips=1000000
