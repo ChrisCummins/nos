@@ -1,7 +1,7 @@
 #include <kheap.h>
 
 #include <assert.h>
-#include <paging.h>
+#include <mm/paging.h>
 #include <util.h>
 #include <kstream.h>
 

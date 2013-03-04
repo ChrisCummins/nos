@@ -1,7 +1,7 @@
 #include <sched/task.h>
 
 #include <kheap.h>
-#include <paging.h>
+#include <mm/paging.h>
 #include <string.h>
 
 #define INIT_STACK_LOCATION (void*)0xE0000000
@@ -80,7 +80,6 @@ void context_switch()
 	current_task->ebp = ebp;
 
 	current_task = current_task->next;
-	k_debug("context_switch()!");
 
 	/* The last task in our ready queue always contains a null pointer, so
 	 * if that is the case, start at the beginning of the list again. */
@@ -94,9 +93,6 @@ void context_switch()
 
 	/* Notify the MM that we've changed to a different PDE. */
 	current_directory = current_task->pde;
-
-	k_debug("EIP: %h", eip);
-
 
 	/* TODO: Replace 0x12345 with macro. */
 	/* 1) Disable interrupts.
@@ -120,64 +116,64 @@ void context_switch()
 
 int fork()
 {
-	/* struct task_s *parent_task, *new_task, *queued_task; */
-	/* struct page_directory_s *pde; */
-	/* uint32_t eip; */
+	struct task_s *parent_task, *new_task, *queued_task;
+	struct page_directory_s *pde;
+	uint32_t eip;
 
-	/* __asm volatile("cli"); */
+	__asm volatile("cli");
 
-	/* /\* Save a pointer to the current process' task. *\/ */
-	/* parent_task = (struct task_s *)current_task; */
+	/* Save a pointer to the current process' task. */
+	parent_task = (struct task_s *)current_task;
 
-	/* /\* Clone the address space. *\/ */
-	/* pde = clone_directory(current_directory); */
+	/* Clone the address space. */
+	pde = clone_directory(current_directory);
 
-	/* /\* Create a new process. *\/ */
-	/* new_task = kcreate(struct task_s, 1); */
+	/* Create a new process. */
+	new_task = kcreate(struct task_s, 1);
 
-	/* new_task->pid = next_pid++; */
-	/* new_task->esp = 0; */
-	/* new_task->ebp = 0; */
-	/* new_task->eip = 0; */
-	/* new_task->pde = pde; */
-	/* new_task->next = 0; */
+	new_task->pid = next_pid++;
+	new_task->esp = 0;
+	new_task->ebp = 0;
+	new_task->eip = 0;
+	new_task->pde = pde;
+	new_task->next = 0;
 
-	/* /\* Add the newly created task to the end of the ready queue. *\/ */
-	/* queued_task = (struct task_s*)ready_queue; */
-	/* while (queued_task->next) { */
-	/* 	/\* Iterate along the ready queue. *\/ */
-	/* 	queued_task = queued_task->next; */
-	/* } */
+	/* Add the newly created task to the end of the ready queue. */
+	queued_task = (struct task_s*)ready_queue;
+	while (queued_task->next) {
+		/* Iterate along the ready queue. */
+		queued_task = queued_task->next;
+	}
 
-	/* /\* We now have the last task in the ready queue, so append the newly */
-	/*  * created task to the list. *\/ */
-	/* queued_task->next = new_task; */
+	/* We now have the last task in the ready queue, so append the newly
+	 * created task to the list. */
+	queued_task->next = new_task;
 
-	/* /\* Get the entry point for the new process. *\/ */
-	/* eip = read_eip(); */
+	/* Get the entry point for the new process. */
+	eip = read_eip();
 
-	/* /\* Here we must distinguish between the parent and child task. *\/ */
-	/* if (current_task == parent_task) { */
-	/* 	uint32_t esp; */
-	/* 	uint32_t ebp; */
+	/* Here we must distinguish between the parent and child task. */
+	if (current_task == parent_task) {
+		uint32_t esp;
+		uint32_t ebp;
 
-	/* 	/\* We are the parent task, so set up the esp, ebp and eip for */
-	/* 	 * the child task. *\/ */
-	/* 	__asm volatile("mov %%esp, %0" : "=r"(esp)); */
-	/* 	__asm volatile("mov %%ebp, %0" : "=r"(ebp)); */
+		/* We are the parent task, so set up the esp, ebp and eip for
+		 * the child task. */
+		__asm volatile("mov %%esp, %0" : "=r"(esp));
+		__asm volatile("mov %%ebp, %0" : "=r"(ebp));
 
-	/* 	new_task->esp = esp; */
-	/* 	new_task->ebp = ebp; */
-	/* 	new_task->eip = eip; */
+		new_task->esp = esp;
+		new_task->ebp = ebp;
+		new_task->eip = eip;
 
-	/* 	__asm volatile("sti"); */
+		__asm volatile("sti");
 
-	/* 	/\* Return the PID of the child task. *\/ */
-	/* 	return new_task->pid; */
-	/* } else { */
-	/* 	/\* We are the child task, so return nothing. *\/ */
-	/* 	return 0; */
-	/* } */
+		/* Return the PID of the child task. */
+		return new_task->pid;
+	} else {
+		/* We are the child task, so return nothing. */
+		return 0;
+	}
 }
 
 void stack_mv(void *dst, size_t size)

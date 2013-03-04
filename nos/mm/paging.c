@@ -1,4 +1,4 @@
-#include <paging.h>
+#include <mm/paging.h>
 
 #include <kheap.h>
 #include <kstream.h>

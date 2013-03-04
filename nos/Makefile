@@ -14,16 +14,16 @@ HEADER_FILES  =              		\
 		isr.h			\
 		kheap.h			\
 		kstream.h		\
+		mm/paging.h		\
 		multiboot.h		\
 		ordered-array.h		\
-		paging.h		\
 		panic.h			\
 		port.h			\
 		ports/pic.h		\
 		ports/pit.h		\
 		ports/tty.h		\
-		sched/task.h		\
 		sched/sched.h		\
+		sched/task.h		\
 		stdarg.h		\
 		string.h		\
 		timer.h			\
@@ -44,12 +44,12 @@ SOURCES_C    :=				\
 		kheap.c			\
 		kstream.c		\
 		main.c			\
+		mm/paging.c		\
 		ordered-array.c 	\
-		paging.c		\
 		panic.c			\
 		port.c			\
-		sched/task.c		\
 		sched/sched.c		\
+		sched/task.c		\
 		string.c		\
 		timer.c			\
 		tty.c			\

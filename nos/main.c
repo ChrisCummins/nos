@@ -5,8 +5,8 @@
 #include <initrd.h>
 #include <kheap.h>
 #include <kstream.h>
+#include <mm/paging.h>
 #include <multiboot.h>
-#include <paging.h>
 #include <sched/task.h>
 #include <string.h>
 #include <timer.h>
