@@ -3,6 +3,19 @@
 
 #include <kernel/types.h>
 
+/* Define this for initrd debugging. */
+#define INITRD_DEBUG 1
+
+#ifdef INITRD_DEBUG
+# define initrd_debug(...) {					\
+		kdebug("%s:%d, %s() ",				\
+		       __FILE__, __LINE__, __func__);		\
+		kdebug(__VA_ARGS__);				\
+	}
+#else
+# define initrd_debug(f, ...) /**/
+#endif
+
 struct initrd_header {
 	uint32_t file_count; /* The number of files in the ramdisk image. */
 };

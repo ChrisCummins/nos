@@ -76,7 +76,6 @@ KBUILD_H_FILES  =              		\
 		  kernel/gdt.h		\
 		  kernel/idt.h		\
 		  kernel/isr.h		\
-		  kernel/kstream.h	\
 		  kernel/multiboot.h	\
 		  kernel/panic.h	\
 		  kernel/port.h		\
@@ -86,6 +85,7 @@ KBUILD_H_FILES  =              		\
 		  kernel/types.h	\
 		  kernel/util.h		\
 		  lib/ordered-array.h	\
+		  lib/stdio.h		\
 		  lib/string.h		\
 		  mm/heap.h		\
 		  mm/paging.h		\
@@ -105,7 +105,6 @@ KBUILD_SRC_C   :=			\
 		  kernel/gdt.c		\
 		  kernel/idt.c		\
 		  kernel/isr.c		\
-		  kernel/kstream.c	\
 		  kernel/main.c		\
 		  kernel/panic.c	\
 		  kernel/port.c		\
@@ -116,6 +115,7 @@ KBUILD_SRC_C   :=			\
 		  mm/heap.c		\
 		  mm/paging.c		\
 		  sched/sched.c		\
+		  lib/stdio.c		\
 		  sched/task.c		\
 		  $(NULL)
 

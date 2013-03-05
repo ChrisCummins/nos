@@ -1,5 +1,5 @@
 #include <kernel/gdt.h>
-#include <kernel/kstream.h>
+#include <lib/stdio.h>
 
 extern void gdt_flush(uint32_t);
 
@@ -10,7 +10,7 @@ static struct gdt_entry gdt_entries[5];
 static struct gdt_pointer gdt_p;
 
 void init_gdt() {
-	k_message("Initialising GDT");
+	gdt_debug("\n");
 
 	gdt_p.limit = (sizeof(struct gdt_entry) * 5) - 1;
 	gdt_p.base  = (uint32_t)&gdt_entries;

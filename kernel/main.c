@@ -3,10 +3,10 @@
 #include <kernel/assert.h>
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
-#include <kernel/kstream.h>
 #include <kernel/multiboot.h>
 #include <kernel/timer.h>
 #include <kernel/tty.h>
+#include <lib/stdio.h>
 #include <lib/string.h>
 #include <mm/heap.h>
 #include <mm/paging.h>
@@ -52,18 +52,19 @@ int kmain(struct multiboot *mboot, uint32_t stack)
 	/* k_message("fork() = %h, getpid() = %h", ret, getpid()); */
 
 	__asm volatile("cli");
-	k_message("initrd contents:");
+	printf("initrd contents:\n");
 	while ((node = fs_readdir(fs_root, i))) {
 		struct fs_node *fsnode = fs_finddir(fs_root, node->name);
 
-		k_message("\t%h\t%d\t/%s",
-			  ((struct initrd_file_header *)fsnode)->offset,
-			  fsnode->size, node->name);
+		printf("\t%h\t%d\t/%s",
+		       ((struct initrd_file_header *)fsnode)->offset,
+		       fsnode->size, node->name);
 
 		if (is_dir(fsnode)) {
-			tty_write("/\n");
+			tty_putc('/');
 		}
 
+		tty_putc('\n');
 		i++;
 	}
 

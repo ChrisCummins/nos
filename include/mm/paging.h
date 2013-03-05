@@ -2,8 +2,8 @@
 #define _PAGING_H
 
 #include <kernel/isr.h>
-#include <kernel/kstream.h>
 #include <kernel/types.h>
+#include <lib/stdio.h>
 
 /* Define this for paging debugging. */
 #define PAGING_DEBUG 1
@@ -37,9 +37,9 @@
 
 #ifdef PAGING_DEBUG
 # define paging_debug(...) {				\
-		k_debug("PAGING (%s, %d): %s() ",	\
-			__FILE__, __LINE__, __func__);	\
-		k_debug(__VA_ARGS__);			\
+		kdebug("%s:%d, %s() ",			\
+		       __FILE__, __LINE__, __func__);	\
+		kdebug(__VA_ARGS__);			\
 	}
 #else
 # define paging_debug(f, ...) /**/

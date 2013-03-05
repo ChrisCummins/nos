@@ -3,6 +3,19 @@
 
 #include <kernel/types.h>
 
+/* Define this for ordered array debugging. */
+#define ORDERED_ARRAY_DEBUG 1
+
+#ifdef ORDERED_ARRAY_DEBUG
+# define ordered_array_debug(...) {			\
+		kdebug("%s:%d, %s() ",			\
+		       __FILE__, __LINE__, __func__);	\
+		kdebug(__VA_ARGS__);			\
+	}
+#else
+# define ordered_array_debug(f, ...) /**/
+#endif
+
 /* Predicates must return non-zero if the first argument is greater than the
  * second. If the second argument is less than the first, return zero. */
 typedef sint8_t (*predicate_t)(type_t, type_t);

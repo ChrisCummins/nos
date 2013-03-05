@@ -3,6 +3,19 @@
 
 #include <kernel/types.h>
 
+/* Define this for ISR debugging. */
+#define ISR_DEBUG 1
+
+#ifdef ISR_DEBUG
+# define isr_debug(...) {						\
+			 kdebug("%s:%d, %s() ",				\
+					__FILE__, __LINE__, __func__);	\
+			 kdebug(__VA_ARGS__);				\
+			 }
+#else
+# define isr_debug(f, ...) /**/
+#endif
+
 /* IRQ mappings. */
 #define IRQ0  32
 #define IRQ1  33

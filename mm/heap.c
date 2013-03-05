@@ -1,9 +1,9 @@
 #include <mm/heap.h>
 
 #include <kernel/assert.h>
-#include <mm/paging.h>
 #include <kernel/util.h>
-#include <kernel/kstream.h>
+#include <lib/stdio.h>
+#include <mm/paging.h>
 
 /* Heap macro functions. */
 #define is_supervisor_only(heap) ((heap->supervisor_only) ? 1 : 0)
@@ -161,8 +161,9 @@ static void _heap_expand(struct heap *heap, uint32_t new_size)
 	/* Return nothing if we attempt to expand heap larger than max
 	 * address. */
 	if (heap->start_address + new_size <= heap->max_address) {
-		k_warn("Attempting to expand heap [%p] beyond maximum size (%h)",
-		       heap, new_size);
+		heap_debug("Attempting to expand heap [%p] "
+			   "beyond maximum size (%h)\n",
+			   heap, new_size);
 		return;
 	}
 

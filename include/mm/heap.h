@@ -4,6 +4,19 @@
 #include <kernel/types.h>
 #include <lib/ordered-array.h>
 
+/* Define this for heap debugging. */
+#define HEAP_DEBUG 1
+
+#ifdef HEAP_DEBUG
+# define heap_debug(...) {				\
+		kdebug("%s:%d, %s() ",			\
+		       __FILE__, __LINE__, __func__);	\
+		kdebug(__VA_ARGS__);			\
+	}
+#else
+# define heap_debug(f, ...) /**/
+#endif
+
 /* Limits and characteristics of the heap. These are arbritary and
  * customiseable values. */
 #define KHEAP_START         0xC0000000

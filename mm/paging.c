@@ -1,9 +1,9 @@
 #include <mm/paging.h>
 
-#include <kernel/kstream.h>
 #include <kernel/panic.h>
 #include <kernel/tty.h>
 #include <kernel/util.h>
+#include <lib/stdio.h>
 #include <lib/string.h>
 #include <mm/heap.h>
 
@@ -104,7 +104,7 @@ void init_paging()
 {
 	uint32_t i;
 
-	paging_debug("initialising paging");
+	paging_debug("\n");
 
 	/* Get the number of frames. */
 	frames_count = MEMORY_END_PAGE / PAGE_SIZE;
@@ -164,7 +164,7 @@ void alloc_frame(struct page *p, int is_kernel, int is_writeable)
 
 		index = _first_frame();
 		if (index == (uint32_t)-1) {
-			k_critical("Unable to allocate a frame for p %p", p);
+			printf("Unable to allocate a frame for page %p\n", p);
 			panic("Out of Memory");
 		}
 
@@ -191,8 +191,7 @@ void switch_page_directory(struct page_directory *d)
 {
 	uint32_t cr0;
 
-	paging_debug("Switching page directory: %h -> %h",
-		     current_directory, d);
+	paging_debug("%h -> %h\n", current_directory, d);
 	current_directory = d;
 	__asm volatile("mov %0, %%cr3":: "r"(d->directory_address));
 	__asm volatile("mov %%cr0, %0": "=r"(cr0));
@@ -236,9 +235,10 @@ struct page_directory *clone_directory(struct page_directory *src)
 	uint32_t offset;
 	int i;
 
+	paging_debug("dest_address: %h\n", dest_address);
+
 	/* Make and zero a page directory and obtain its physical address. */
 	dest = kcreate_ap(struct page_directory, 1, &dest_address);
-	k_debug("dest_address: %h", dest_address);
 	memset((uint8_t*)dest, 0x0, sizeof(struct page_directory));
 
 	/* Get the offset of physical_tables from the start of the struct
@@ -268,7 +268,7 @@ struct page_directory *clone_directory(struct page_directory *src)
 		}
 	}
 
-	paging_debug("Cloned page directory %h -> %h", src, dest);
+	paging_debug("%h -> %h\n", src, dest);
 
 	return dest;
 }
@@ -293,7 +293,7 @@ void page_fault(struct registers registers)
 	reserved = registers.error_code & 0x8;
 	/* id       = registers.error_code & 0x10; */
 
-	k_critical("PAGE FAULT: %h ", faulting_address);
+	printf("PAGE FAULT: %h ", faulting_address);
 
 	if (present) {
 		tty_write("PRESENT ");

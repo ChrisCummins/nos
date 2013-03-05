@@ -1,7 +1,7 @@
 #include <kernel/timer.h>
 #include <kernel/isr.h>
-#include <kernel/kstream.h>
 #include <kernel/port.h>
+#include <lib/stdio.h>
 #include <sched/task.h>
 
 #define PIT_CLOCK_FREQUENCY 1193180
@@ -23,7 +23,7 @@ void init_timer(uint32_t frequency)
 {
 	uint32_t divisor;
 
-	k_message("Initialising Timer");
+	timer_debug("\n");
 
 	/* Register our timer callback. */
 	register_interrupt_handler(IRQ0, (isr_t)&_timer_callback);

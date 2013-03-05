@@ -1,5 +1,5 @@
 #include <kernel/isr.h>
-#include <kernel/kstream.h>
+#include <lib/stdio.h>
 #include <kernel/port.h>
 
 isr_t interrupt_handlers[256];
@@ -37,8 +37,8 @@ void irq_handler(struct registers registers)
 }
 
 void register_interrupt_handler(uint8_t interrupt_number, isr_t handler) {
-	k_debug("Register ISR: [%d, %p]",
-		interrupt_number, (uint32_t) handler);
+	isr_debug("Register: [%d, %p]\n",
+		  interrupt_number, (uint32_t) handler);
 
 	interrupt_handlers[interrupt_number] = handler;
 }

@@ -1,7 +1,7 @@
 #include <kernel/idt.h>
 
 #include <kernel/isr.h>
-#include <kernel/kstream.h>
+#include <lib/stdio.h>
 #include <kernel/util.h>
 #include <kernel/port.h>
 #include <lib/string.h>
@@ -19,7 +19,7 @@ static struct idt_pointer idt_p;
 
 void init_idt()
 {
-	k_message("Initialising IDT\n");
+	idt_debug("\n");
 
 	idt_p.limit = sizeof(struct idt_entry) * 256 - 1;
 	idt_p.base  = (uint32_t)&idt_entries;

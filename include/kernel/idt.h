@@ -3,6 +3,19 @@
 
 #include <kernel/types.h>
 
+/* Define this for IDT debugging. */
+#define IDT_DEBUG 1
+
+#ifdef IDT_DEBUG
+# define idt_debug(...) {				\
+		kdebug("%s:%d, %s() ",			\
+		       __FILE__, __LINE__, __func__);	\
+		kdebug(__VA_ARGS__);			\
+	}
+#else
+# define idt_debug(f, ...) /**/
+#endif
+
 struct idt_entry {
 	uint16_t base_low;  /* The lower 16 bits of the interrupt address. */
 	uint16_t selector;  /* Kernel segment selector. */
@@ -16,7 +29,7 @@ struct idt_pointer {
 	uint32_t base; /* The address of the idt_entry first element. */
 } __attribute__((packed));
 
-/* GDT access flag positions. */
+/* IDT access flag positions. */
 #define IDT_FLAGS_P_SHIFT     7
 #define IDT_FLAGS_DPL_SHIFT   5
 

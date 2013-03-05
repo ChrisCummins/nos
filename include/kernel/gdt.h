@@ -3,6 +3,19 @@
 
 #include <kernel/types.h>
 
+/* Define this for GDT debugging. */
+#define GDT_DEBUG 1
+
+#ifdef GDT_DEBUG
+# define gdt_debug(...) {				\
+		kdebug("%s:%d, %s() ",			\
+		       __FILE__, __LINE__, __func__);	\
+		kdebug(__VA_ARGS__);			\
+	}
+#else
+# define gdt_debug(f, ...) /**/
+#endif
+
 struct gdt_entry {
 	uint16_t limit_low;     /* The lower 16 bits of the limit. */
 	uint16_t base_low;      /* The lower 16 bits of the base. */

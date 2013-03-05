@@ -1,8 +1,8 @@
 #include <lib/ordered-array.h>
 
 #include <kernel/assert.h>
-#include <kernel/kstream.h>
 #include <kernel/util.h>
+#include <lib/stdio.h>
 #include <lib/string.h>
 #include <mm/heap.h>
 
@@ -89,8 +89,8 @@ type_t ordered_array_lookup_index(struct ordered_array *array,
 	if (index < array->size) {
 		return array->data[index];
 	} else {
-		k_debug("Attempt to access index %d of array[%d]",
-			index, array->size);
+		ordered_array_debug("Attempt to access index %d of array[%d]\n",
+				    index, array->size);
 		return 0;
 	}
 }
@@ -99,8 +99,8 @@ void ordered_array_remove_index(struct ordered_array *array,
 				uint32_t index)
 {
 	if (index > array->size) {
-		k_debug("Attempt to remove index %d of array[%d]", index,
-			array->size);
+		ordered_array_debug("Attempt to remove index %d of array[%d]\n",
+				    index, array->size);
 		return;
 	}
 

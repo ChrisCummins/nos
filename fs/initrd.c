@@ -2,7 +2,7 @@
 
 #include <fs/fs.h>
 #include <kernel/assert.h>
-#include <kernel/kstream.h>
+#include <lib/stdio.h>
 #include <kernel/types.h>
 #include <lib/string.h>
 #include <mm/heap.h>
@@ -29,8 +29,8 @@ static uint32_t _initrd_read(struct fs_node *node, uint32_t offset,
 
 	if (offset > header.size) {
 		/* Invalid read (out of bounds) */
-		k_warn("initrd: invalid offset of %h in node size %h\n",
-		       offset, size);
+		initrd_debug("initrd: invalid offset of %h in node size %h\n",
+			     offset, size);
 		return 0;
 	}
 
