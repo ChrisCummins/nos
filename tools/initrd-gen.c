@@ -7,7 +7,7 @@
 #define HEADER_COUNT 64
 #define FILENAME_LEN 128
 
-struct initrd_file_header_s {
+struct initrd_file_header {
   char          name[FILENAME_LEN];
   unsigned char id;
   unsigned int  offset;
@@ -32,7 +32,7 @@ static void usage(FILE *stream)
 
 int main(int argc, char **argv)
 {
-  struct initrd_file_header_s headers[HEADER_COUNT];
+  struct initrd_file_header headers[HEADER_COUNT];
   int headers_count;
   char *output_file;
   unsigned int offset;
@@ -59,12 +59,12 @@ int main(int argc, char **argv)
   headers_count = (argc - 2) / 2;
 
   printf("INITRD-GEN  %s\n", output_file);
-  offset = sizeof(struct initrd_file_header_s) * HEADER_COUNT + sizeof(int);
+  offset = sizeof(struct initrd_file_header) * HEADER_COUNT + sizeof(int);
 
   for(i = 0; i < headers_count; i++) {
     char *path = argv[(2 * i) + 2];
     char *name = argv[(2 * i) + 3];
-    struct initrd_file_header_s *header = &headers[i];
+    struct initrd_file_header *header = &headers[i];
     FILE *stream;
 
     if (strlen(path) > FILENAME_LEN) {
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
   data = (unsigned char *)malloc(offset);
   fwrite(&headers_count, sizeof(int), 1, write_stream);
-  fwrite(headers, sizeof(struct initrd_file_header_s), HEADER_COUNT, write_stream);
+  fwrite(headers, sizeof(struct initrd_file_header), HEADER_COUNT, write_stream);
 
   for(i = 0; i < headers_count; i++) {
     char *path = argv[(2 * i) + 2];

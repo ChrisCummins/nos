@@ -4,7 +4,7 @@
 
 isr_t interrupt_handlers[256];
 
-static void _execute_handler(struct registers_s registers) {
+static void _execute_handler(struct registers registers) {
 	if (interrupt_handlers[registers.interrupt_number] != 0) {
 		isr_t handler;
 
@@ -14,13 +14,13 @@ static void _execute_handler(struct registers_s registers) {
 }
 
 /* Called from ./interrupts.s */
-void isr_handler(struct registers_s registers)
+void isr_handler(struct registers registers)
 {
 	_execute_handler(registers);
 }
 
 /* Called from ./interrupts.s */
-void irq_handler(struct registers_s registers)
+void irq_handler(struct registers registers)
 {
 	/* If the interrupt originated form the slave PIC, then an EOI signal
 	 * must be sent to the slave PIC. */

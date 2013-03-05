@@ -12,18 +12,18 @@
 #define TASK_SWITCH_DUMMY_VALUE 0x12345
 
 /* Defined in ../paging.c */
-extern struct page_directory_s *kernel_directory;
-extern struct page_directory_s *current_directory;
-extern void alloc_frame(struct page_s *p, int is_kernel, int is_writeable);
+extern struct page_directory *kernel_directory;
+extern struct page_directory *current_directory;
+extern void alloc_frame(struct page *p, int is_kernel, int is_writeable);
 extern uint32_t read_eip(void);
 
 /* Defined in ../main.c */
 extern uint32_t initial_esp;
 
-volatile struct task_s *current_task;
+volatile struct task *current_task;
 
 /* The start of the task linked list. */
-volatile struct task_s *ready_queue;
+volatile struct task *ready_queue;
 
 /* The next available PID. */
 uint32_t next_pid = 1;
@@ -37,7 +37,7 @@ void init_tasking ()
 	stack_mv(INIT_STACK_LOCATION, INIT_STACK_SIZE);
 
 	/* Initialise the kernel task as the first task. */
-	current_task = kcreate(struct task_s, 1);
+	current_task = kcreate(struct task, 1);
 	current_task->pid = next_pid++;
 	current_task->esp = 0;
 	current_task->ebp = 0;
@@ -116,20 +116,20 @@ void context_switch()
 
 int fork()
 {
-	struct task_s *parent_task, *new_task, *queued_task;
-	struct page_directory_s *pde;
+	struct task *parent_task, *new_task, *queued_task;
+	struct page_directory *pde;
 	uint32_t eip;
 
 	__asm volatile("cli");
 
 	/* Save a pointer to the current process' task. */
-	parent_task = (struct task_s *)current_task;
+	parent_task = (struct task *)current_task;
 
 	/* Clone the address space. */
 	pde = clone_directory(current_directory);
 
 	/* Create a new process. */
-	new_task = kcreate(struct task_s, 1);
+	new_task = kcreate(struct task, 1);
 
 	new_task->pid = next_pid++;
 	new_task->esp = 0;
@@ -139,7 +139,7 @@ int fork()
 	new_task->next = 0;
 
 	/* Add the newly created task to the end of the ready queue. */
-	queued_task = (struct task_s*)ready_queue;
+	queued_task = (struct task *)ready_queue;
 	while (queued_task->next) {
 		/* Iterate along the ready queue. */
 		queued_task = queued_task->next;

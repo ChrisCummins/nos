@@ -14,8 +14,8 @@
 /* Defined in ./process.s. */
 extern void copy_page_physical(uint32_t src, uint32_t dest);
 
-struct page_directory_s *kernel_directory = 0;
-struct page_directory_s *current_directory = 0;
+struct page_directory *kernel_directory = 0;
+struct page_directory *current_directory = 0;
 
 /* A bitset of frames, used or free. */
 uint32_t *frames;
@@ -23,7 +23,7 @@ uint32_t frames_count;
 
 /* Defined in ./kheap.c. */
 extern uint32_t placement_address;
-extern struct heap_s *kernel_heap;
+extern struct heap *kernel_heap;
 
 /* Set a bit in a frame's bitset. */
 static void _set_frame(uint32_t frame_address)
@@ -67,15 +67,15 @@ static uint32_t _first_frame(void)
 	return 0;
 }
 
-static struct page_table_s *_clone_table(struct page_table_s *src,
-					 uint32_t *physical_address)
+static struct page_table *_clone_table(struct page_table *src,
+				       uint32_t *physical_address)
 {
-	struct page_table_s *table;
+	struct page_table *table;
 	int i;
 
 	/* Make and zero a page aligned table. */
-	table = kcreate_ap(struct page_table_s, 1, physical_address);
-	memset((uint8_t *)table, 0x0, sizeof(struct page_directory_s));
+	table = kcreate_ap(struct page_table, 1, physical_address);
+	memset((uint8_t *)table, 0x0, sizeof(struct page_directory));
 
 	/* Iterate over the table entries. */
 	for (i = 0; i < PAGES_IN_TABLE; i++) {
@@ -112,8 +112,8 @@ void init_paging()
 	memset((void *)frames, 0x0, INDEX_FROM_BIT(frames_count));
 
 	/* Make a page directory. */
-	kernel_directory  = kcreate_a(struct page_directory_s, 1);
-	memset((uint8_t*)kernel_directory, 0x0, sizeof(struct page_directory_s));
+	kernel_directory  = kcreate_a(struct page_directory, 1);
+	memset((uint8_t*)kernel_directory, 0x0, sizeof(struct page_directory));
 	kernel_directory->directory_address = (uint32_t)kernel_directory->physical_address;
 
 	/* Map some pages in the kernel heap area, using get_page() not
@@ -157,7 +157,7 @@ void init_paging()
 }
 
 /* Allocate a frame. */
-void alloc_frame(struct page_s *p, int is_kernel, int is_writeable)
+void alloc_frame(struct page *p, int is_kernel, int is_writeable)
 {
 	if (p->frame == 0) {
 		uint32_t index;
@@ -177,7 +177,7 @@ void alloc_frame(struct page_s *p, int is_kernel, int is_writeable)
 }
 
 /* Deallocate a frame. */
-void free_frame(struct page_s *p)
+void free_frame(struct page *p)
 {
 	uint32_t frame;
 
@@ -187,7 +187,7 @@ void free_frame(struct page_s *p)
 	}
 }
 
-void switch_page_directory(struct page_directory_s *d)
+void switch_page_directory(struct page_directory *d)
 {
 	uint32_t cr0;
 
@@ -200,8 +200,8 @@ void switch_page_directory(struct page_directory_s *d)
 	__asm volatile("mov %0, %%cr0":: "r"(cr0));
 }
 
-struct page_s *get_page(uint32_t address, enum create_page_e make,
-                        struct page_directory_s *d)
+struct page *get_page(uint32_t address, enum create_page_e make,
+		      struct page_directory *d)
 {
 	uint32_t index;
 
@@ -218,7 +218,7 @@ struct page_s *get_page(uint32_t address, enum create_page_e make,
 		uint32_t temp;
 
 		/* Create a table. */
-		d->virtual_tables[index] = kcreate_ap(struct page_table_s, 1,
+		d->virtual_tables[index] = kcreate_ap(struct page_table, 1,
 						      &temp);
 		d->physical_address[index] = temp | 0x7; /* Present, R/W,
 							  * User-space mask. */
@@ -229,17 +229,17 @@ struct page_s *get_page(uint32_t address, enum create_page_e make,
 	}
 }
 
-struct page_directory_s *clone_directory(struct page_directory_s *src)
+struct page_directory *clone_directory(struct page_directory *src)
 {
-	struct page_directory_s *dest;
+	struct page_directory *dest;
 	uint32_t dest_address;
 	uint32_t offset;
 	int i;
 
 	/* Make and zero a page directory and obtain its physical address. */
-	dest = kcreate_ap(struct page_directory_s, 1, &dest_address);
+	dest = kcreate_ap(struct page_directory, 1, &dest_address);
 	k_debug("dest_address: %h", dest_address);
-	memset((uint8_t*)dest, 0x0, sizeof(struct page_directory_s));
+	memset((uint8_t*)dest, 0x0, sizeof(struct page_directory));
 
 	/* Get the offset of physical_tables from the start of the struct
 	 * page_directory_s. and add it the dest_address to get total offset. */
@@ -273,7 +273,7 @@ struct page_directory_s *clone_directory(struct page_directory_s *src)
 	return dest;
 }
 
-void page_fault(struct registers_s registers)
+void page_fault(struct registers registers)
 {
 	uint32_t faulting_address;
 	int present;

@@ -14,17 +14,17 @@ extern isr_t interrupt_handlers[];
 static void idt_set_gate(uint8_t number, uint32_t base,
                          uint16_t selector, uint8_t flags);
 
-static struct idt_entry_s   idt_entries[256];
-static struct idt_pointer_s idt_p;
+static struct idt_entry   idt_entries[256];
+static struct idt_pointer idt_p;
 
 void init_idt()
 {
 	k_message("Initialising IDT\n");
 
-	idt_p.limit = sizeof(struct idt_entry_s) * 256 - 1;
+	idt_p.limit = sizeof(struct idt_entry) * 256 - 1;
 	idt_p.base  = (uint32_t)&idt_entries;
 
-	memset((void *)&idt_entries, 0x0, (sizeof(struct idt_entry_s)) * 256);
+	memset((void *)&idt_entries, 0x0, (sizeof(struct idt_entry)) * 256);
 	memset((void *)&interrupt_handlers, 0x0, (sizeof(isr_t)) * 256);
 
 	/* When the computer boots, the default interrupt mappings are:

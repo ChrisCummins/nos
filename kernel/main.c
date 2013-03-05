@@ -16,13 +16,13 @@
 extern uint32_t placement_address;
 uint32_t initial_esp;
 
-int kmain(struct multiboot_s *mboot, uint32_t stack)
+int kmain(struct multiboot *mboot, uint32_t stack)
 {
 	uint32_t initrd_location;
 	uint32_t initrd_end;
 	int i = 0;
-	struct fs_node_s *fs_root;
-	struct dirent_s *node = 0;
+	struct fs_node *fs_root;
+	struct dirent *node = 0;
 
 	/* Get our stack pointer. */
 	initial_esp = stack;
@@ -54,10 +54,10 @@ int kmain(struct multiboot_s *mboot, uint32_t stack)
 	__asm volatile("cli");
 	k_message("initrd contents:");
 	while ((node = fs_readdir(fs_root, i))) {
-		struct fs_node_s *fsnode = fs_finddir(fs_root, node->name);
+		struct fs_node *fsnode = fs_finddir(fs_root, node->name);
 
 		k_message("\t%h\t%d\t/%s",
-			  ((struct initrd_file_header_s *)fsnode)->offset,
+			  ((struct initrd_file_header *)fsnode)->offset,
 			  fsnode->size, node->name);
 
 		if (is_dir(fsnode)) {

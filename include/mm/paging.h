@@ -45,7 +45,7 @@
 # define paging_debug(f, ...) /**/
 #endif
 
-struct page_s {
+struct page {
 	uint32_t present  :  1; /* Page present in memory. */
 	uint32_t rw       :  1; /* Read-only if clear, readwrite if set. */
 	uint32_t user     :  1; /* Supervisor level only if clear. */
@@ -55,12 +55,12 @@ struct page_s {
 	uint32_t frame    : 20; /* Frame address (shifted right 12 bits). */
 };
 
-struct page_table_s {
-	struct page_s pages[PAGES_IN_TABLE];
+struct page_table {
+	struct page pages[PAGES_IN_TABLE];
 };
 
-struct page_directory_s {
-	struct page_table_s *virtual_tables[TABLES_IN_DIRECTORY];
+struct page_directory {
+	struct page_table *virtual_tables[TABLES_IN_DIRECTORY];
 	uint32_t physical_address[TABLES_IN_DIRECTORY];
 	uint32_t directory_address;
 };
@@ -68,7 +68,7 @@ struct page_directory_s {
 void init_paging(void);
 
 /* Load the specified page directory into CR3 register. */
-void switch_page_directory(struct page_directory_s *new);
+void switch_page_directory(struct page_directory *new);
 
 /* Determines whether to create a page-table if necessary. */
 enum create_page_e {
@@ -77,16 +77,16 @@ enum create_page_e {
 };
 
 /* Retrieve page from page directory. */
-struct page_s *get_page(uint32_t address, enum create_page_e make,
-                        struct page_directory_s *page_directory);
+struct page *get_page(uint32_t address, enum create_page_e make,
+		      struct page_directory *page_directory);
 
 /* Handler for page faults. */
-void page_fault(struct registers_s registers);
+void page_fault(struct registers registers);
 
-void alloc_frame(struct page_s *page, int is_kernel, int is_writeable);
-void free_frame(struct page_s *page);
+void alloc_frame(struct page *page, int is_kernel, int is_writeable);
+void free_frame(struct page *page);
 
-struct page_directory_s *clone_directory(struct page_directory_s *src);
+struct page_directory *clone_directory(struct page_directory *src);
 
 
 #endif /* _PAGING_H */

@@ -23,7 +23,7 @@
 
 typedef uint32_t register_t;
 
-struct registers_s {
+struct registers {
 	/* Data segment selector. */
 	register_t ds;
 
@@ -49,7 +49,7 @@ struct registers_s {
 };
 
 /* ISR handler function. */
-typedef void (*isr_t)(struct registers_s);
+typedef void (*isr_t)(struct registers);
 
 void register_interrupt_handler(uint8_t interrupt_number, isr_t handler);
 

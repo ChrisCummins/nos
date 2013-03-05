@@ -11,7 +11,7 @@ typedef sint8_t (*predicate_t)(type_t, type_t);
 sint8_t default_predicate(type_t a, type_t b);
 
 /* An ordered array. */
-struct ordered_array_s {
+struct ordered_array {
   type_t *data;          /* Pointer to array's first element. */
   uint32_t size;         /* The size (length) of the array.   */
   uint32_t max_size;     /* size cannot exceed this value.    */
@@ -19,19 +19,19 @@ struct ordered_array_s {
 };
 
 /* Construct an ordered array, allocating space for it. */
-struct ordered_array_s ordered_array_new(uint32_t max_size,
-                                         predicate_t predicate);
+struct ordered_array ordered_array_new(uint32_t max_size,
+				       predicate_t predicate);
 
 /* Construct an ordered array, using 'address' as the data starting point. This
  * means that you can control the location of the array. */
-struct ordered_array_s ordered_array_place(void *address, uint32_t max_size,
-                                           predicate_t predicate);
+struct ordered_array ordered_array_place(void *address, uint32_t max_size,
+					 predicate_t predicate);
 
-void ordered_array_destroy(struct ordered_array_s *array);
+void ordered_array_destroy(struct ordered_array *array);
 
 /* List functions. */
-void ordered_array_insert(struct ordered_array_s *array, type_t item);
-type_t ordered_array_lookup_index(struct ordered_array_s *array, uint32_t index);
-void ordered_array_remove_index(struct ordered_array_s *array, uint32_t index);
+void ordered_array_insert(struct ordered_array *array, type_t item);
+type_t ordered_array_lookup_index(struct ordered_array *array, uint32_t index);
+void ordered_array_remove_index(struct ordered_array *array, uint32_t index);
 
 #endif /* _ORDERED_ARRAY_H */

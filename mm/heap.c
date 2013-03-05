@@ -12,8 +12,8 @@
 
 /* Block utility functions and constants. */
 #define is_hole(h) ((h->is_hole) ? 1 : 0)
-#define HEADER_SIZE (sizeof(struct header_s))
-#define FOOTER_SIZE (sizeof(struct footer_s))
+#define HEADER_SIZE (sizeof(struct header))
+#define FOOTER_SIZE (sizeof(struct footer))
 #define BLOCK_OVERHEAD (HEADER_SIZE + FOOTER_SIZE)
 
 /* An invalid memory access in a heap algorithm can go totally undetected, so in
@@ -28,8 +28,8 @@
  * or footer, reliant on the _ID value. Obviously this is not a guaranteed
  * check, as it is possible that the specific piece of memory used to store the
  * ID could coincidentally (or othersie) contain the correct value. */
-#define is_header(h) ((((struct header_s*)h)->id == HEADER_ID) ? 1 : 0)
-#define is_footer(f) ((((struct footer_s*)f)->id == FOOTER_ID) ? 1 : 0)
+#define is_header(h) ((((struct header *)h)->id == HEADER_ID) ? 1 : 0)
+#define is_footer(f) ((((struct footer *)f)->id == FOOTER_ID) ? 1 : 0)
 
 /* Aligns an address to the next page. It does this by first masking off the
  * unaligned bits, and then incrmenting this address by the size of a page.
@@ -57,13 +57,13 @@ enum align_page_e {
 };
 
 /* This is defined in ./paging.c. */
-extern struct page_directory_s *kernel_directory;
+extern struct page_directory *kernel_directory;
 /* This is defined in ./link.ld. */
 extern uint32_t end;
 
 /* These are referenced in ./paging.c. */
 uint32_t placement_address = (uint32_t)&end;
-struct heap_s *kernel_heap = 0;
+struct heap *kernel_heap = 0;
 
 static uint32_t _heap_kmalloc(uint32_t size, enum align_page_e align,
 			      uint32_t *physical_address)
@@ -71,7 +71,7 @@ static uint32_t _heap_kmalloc(uint32_t size, enum align_page_e align,
 	void *address = alloc(kernel_heap, size, align);
 
 	if (physical_address) {
-		struct page_s *page = get_page((uint32_t)address, 0,
+		struct page *page = get_page((uint32_t)address, 0,
 					       kernel_directory);
 
 		*physical_address = (page->frame * PAGE_SIZE)
@@ -141,7 +141,7 @@ void kfree(void *block)
 }
 
 /* Claim extra space for the heap. */
-static void _heap_expand(struct heap_s *heap, uint32_t new_size)
+static void _heap_expand(struct heap *heap, uint32_t new_size)
 {
 	uint32_t old_size;
 	uint32_t i;
@@ -179,7 +179,7 @@ static void _heap_expand(struct heap_s *heap, uint32_t new_size)
 }
 
 /* Contract the heap. Returns the new size. */
-static uint32_t _heap_contract(struct heap_s *heap, uint32_t new_size)
+static uint32_t _heap_contract(struct heap *heap, uint32_t new_size)
 {
 	uint32_t old_size = sizeof_heap(heap);
 	uint32_t i = old_size - PAGE_SIZE;
@@ -209,15 +209,15 @@ static uint32_t _heap_contract(struct heap_s *heap, uint32_t new_size)
 
 /* Find the smallest hole that will fit and return its index. If none is found,
  * return -1. */
-static sint32_t _heap_find_first_fit(struct heap_s *heap, uint32_t size,
+static sint32_t _heap_find_first_fit(struct heap *heap, uint32_t size,
                                      uint8_t page_align)
 {
 	uint32_t i = 0;
 
 	while (i < heap->index.size) {
-		struct header_s *header;
+		struct header *header;
 
-		header = (struct header_s *)ordered_array_lookup_index(&heap->index, i);
+		header = (struct header *)ordered_array_lookup_index(&heap->index, i);
 
 		if (page_align) {
 			uint32_t location = (uint32_t)header;
@@ -259,29 +259,29 @@ static sint32_t _heap_find_first_fit(struct heap_s *heap, uint32_t size,
 	}
 }
 
-/* Return 1 if struct header_s a is larger, else return 0. Used to order a set
+/* Return 1 if struct header a is larger, else return 0. Used to order a set
  * of headers by size, as opposed to the pointer address. */
 sint8_t header_predicate(void *a, void *b)
 {
-	struct header_s *header_a = (struct header_s *)a;
-	struct header_s *header_b = (struct header_s *)b;
+	struct header *header_a = (struct header *)a;
+	struct header *header_b = (struct header *)b;
 
 	return (header_a->size > header_b->size) ? 1 : 0;
 }
 
 /* Create a heap. */
-struct heap_s *heap_create(uint32_t start_address, uint32_t end_address,
-                           uint32_t max_address, uint8_t supervisor_only,
-                           uint8_t read_only)
+struct heap *heap_create(uint32_t start_address, uint32_t end_address,
+			 uint32_t max_address, uint8_t supervisor_only,
+			 uint8_t read_only)
 {
-	struct heap_s *heap;
-	struct header_s *hole;
+	struct heap *heap;
+	struct header *hole;
 
 	/* If we're not page aligned, then what has it all been for?? */
 	assert((start_address % PAGE_SIZE) == 0);
 	assert((end_address % PAGE_SIZE) == 0);
 
-	heap = kcreate(struct heap_s, 1);
+	heap = kcreate(struct heap, 1);
 
 	/* Initialise the index as an ordered array. */
 	heap->index = ordered_array_place((void*)start_address, HEAP_INDEX_SIZE,
@@ -303,7 +303,7 @@ struct heap_s *heap_create(uint32_t start_address, uint32_t end_address,
 	heap->read_only = read_only;
 
 	/* Create an initial block, which is a hole the size of the heap. */
-	hole = (struct header_s *)start_address;
+	hole = (struct header *)start_address;
 	hole->size = end_address - start_address;
 	hole->id = HEADER_ID;
 	hole->is_hole = 1;
@@ -314,17 +314,17 @@ struct heap_s *heap_create(uint32_t start_address, uint32_t end_address,
 
 /* Allocate a block of size 'size' from 'heap'. Align block to page if
  * 'page_align' is nonzero. */
-void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
+void *alloc(struct heap *heap, uint32_t size, uint8_t page_align)
 {
 	uint32_t total_size;
 	sint32_t i;
 
-	struct header_s *original_hole_header;
+	struct header *original_hole_header;
 	uint32_t original_hole_position;
 	uint32_t original_hole_size;
 
-	struct header_s *block_header;
-	struct footer_s *block_footer;
+	struct header *block_header;
+	struct footer *block_footer;
 
 	/* We must account for the size of the header and footer. */
 	total_size = (size + BLOCK_OVERHEAD);
@@ -332,8 +332,8 @@ void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 	i = _heap_find_first_fit(heap, total_size, page_align);
 
 	if (i == -1) {
-		struct header_s *header;
-		struct footer_s *footer;
+		struct header *header;
+		struct footer *footer;
 		uint32_t old_end_address = heap->end_address;
 		uint32_t old_length = sizeof_heap(heap);
 		uint32_t new_length;
@@ -362,14 +362,14 @@ void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 
 		if (index == (uint32_t)-1) {
 			/* If we didn't find any headers, we must add one. */
-			header = (struct header_s *)old_end_address;
+			header = (struct header *)old_end_address;
 			header->id = HEADER_ID;
 			header->size = new_length - old_length;
 			header->is_hole = 1;
 
-			footer = (struct footer_s *)(old_end_address
-						     + header->size
-						     - FOOTER_SIZE);
+			footer = (struct footer *)(old_end_address
+						   + header->size
+						   - FOOTER_SIZE);
 			footer->id = FOOTER_ID;
 			footer->header = header;
 
@@ -380,7 +380,7 @@ void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 			header->size += new_length - old_length;
 
 			/* Re-write the footer. */
-			footer = (struct footer_s*)((uint32_t)header
+			footer = (struct footer *)((uint32_t)header
 						    + header->size
 						    - FOOTER_SIZE);
 			footer->id = FOOTER_ID;
@@ -394,7 +394,7 @@ void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 	/* We must now decide whether to split the hole we found into two
 	 * parts. Is the original hole size minus requested hole size less than
 	 * the overhead for adding a new hole? */
-	original_hole_header = (struct header_s*)ordered_array_lookup_index(&heap->index, i);
+	original_hole_header = (struct header *)ordered_array_lookup_index(&heap->index, i);
 	original_hole_position = (uint32_t)original_hole_header;
 	original_hole_size = original_hole_header->size;
 
@@ -409,21 +409,21 @@ void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 	 * front of our block. */
 	if (page_align && (!is_page_aligned(original_hole_position))) {
 		uint32_t new_location;
-		struct header_s *hole_header;
-		struct footer_s *hole_footer;
+		struct header *hole_header;
+		struct footer *hole_footer;
 
 		new_location = (original_hole_position + PAGE_SIZE
 				- HEADER_SIZE
 				- (original_hole_position & 0xFFF));
 
-		hole_header = (struct header_s*)original_hole_position;
+		hole_header = (struct header *)original_hole_position;
 		hole_header->size = (PAGE_SIZE
 				     - (original_hole_position & 0xFFF)
 				     - HEADER_SIZE);
 		hole_header->id = HEADER_ID;
 		hole_header->is_hole = 1;
 
-		hole_footer = (struct footer_s*)((uint32_t)new_location - FOOTER_SIZE);
+		hole_footer = (struct footer *)((uint32_t)new_location - FOOTER_SIZE);
 		hole_footer->id = FOOTER_ID;
 		hole_footer->header = hole_header;
 		original_hole_position = new_location;
@@ -435,13 +435,13 @@ void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 	}
 
 	/* Overwrite the original header. */
-	block_header = (struct header_s*)original_hole_position;
+	block_header = (struct header *)original_hole_position;
 	block_header->id = HEADER_ID;
 	block_header->is_hole = 0;
 	block_header->size = total_size;
 
 	/* Overwrite the original footer. */
-	block_footer = (struct footer_s*)(original_hole_position
+	block_footer = (struct footer *)(original_hole_position
 					  + HEADER_SIZE + size);
 	block_footer->id = FOOTER_ID;
 	block_footer->header = block_header;
@@ -449,16 +449,16 @@ void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 	/* We may need to write a new hole after the allocated block. We do this only
 	 * if the new hole would have a positive size (size > 0). */
 	if ((original_hole_size - total_size) > 0) {
-		struct header_s *hole_header;
-		struct footer_s *hole_footer;
+		struct header *hole_header;
+		struct footer *hole_footer;
 
-		hole_header = (struct header_s*)(original_hole_position + size
+		hole_header = (struct header *)(original_hole_position + size
 						 + BLOCK_OVERHEAD);
 		hole_header->id = HEADER_ID;
 		hole_header->is_hole = 1;
 		hole_header->size = original_hole_size - total_size;
 
-		hole_footer = (struct footer_s*)((uint32_t)hole_header
+		hole_footer = (struct footer *)((uint32_t)hole_header
 						 - total_size
 						 + original_hole_size
 						 - FOOTER_SIZE);
@@ -474,12 +474,12 @@ void *alloc(struct heap_s *heap, uint32_t size, uint8_t page_align)
 	return (void*)((uint32_t)block_header + HEADER_SIZE);
 }
 
-void free(struct heap_s *heap, void *block)
+void free(struct heap *heap, void *block)
 {
-	struct header_s *header;
-	struct footer_s *footer;
-	struct header_s *test_header;
-	struct footer_s *test_footer;
+	struct header *header;
+	struct footer *footer;
+	struct header *test_header;
+	struct footer *test_footer;
 	char do_add = 1;
 
 	/* Exit gracefully for a null pointer. */
@@ -488,8 +488,8 @@ void free(struct heap_s *heap, void *block)
 	}
 
 	/* Retrieve the header and footer associated with this pointer. */
-	header = (struct header_s*)((uint32_t)block - HEADER_SIZE);
-	footer = (struct footer_s*)((uint32_t)header
+	header = (struct header *)((uint32_t)block - HEADER_SIZE);
+	footer = (struct footer *)((uint32_t)header
 				    + header->size
 				    - FOOTER_SIZE);
 
@@ -502,7 +502,7 @@ void free(struct heap_s *heap, void *block)
 
 	/* Now come decision logic as to whether to index this as a free
 	 * hole. */
-	test_footer = (struct footer_s*)((uint32_t)header - FOOTER_SIZE);
+	test_footer = (struct footer *)((uint32_t)header - FOOTER_SIZE);
 
 	/* If the memory immediately to the left of this block is a footer then
 	 * we can merge left. */
@@ -521,7 +521,7 @@ void free(struct heap_s *heap, void *block)
 
 	/* If the memory immediately to the right of this block is a footer then
 	 * we can merge right. */
-	test_header = (struct header_s*)((uint32_t)footer + FOOTER_SIZE);
+	test_header = (struct header *)((uint32_t)footer + FOOTER_SIZE);
 	if (test_header->id == HEADER_ID
 	    && test_header->is_hole == 1) {
 		uint32_t i = 0;
@@ -529,7 +529,7 @@ void free(struct heap_s *heap, void *block)
 		/* Increase the size the current header, and re-write the footer
 		 * of the test block to point to the current header. */
 		header->size += test_header->size;
-		test_footer = (struct footer_s*)((uint32_t)test_header
+		test_footer = (struct footer *)((uint32_t)test_header
 						 + test_header->size
 						 - FOOTER_SIZE);
 		footer = test_footer;
@@ -559,7 +559,7 @@ void free(struct heap_s *heap, void *block)
 			/* The block will still exist, so resize. */
 			header->size -= (old_length - new_length);
 
-			footer = (struct footer_s*)((uint32_t)header
+			footer = (struct footer *)((uint32_t)header
 						    + header->size
 						    - FOOTER_SIZE);
 			footer->id = FOOTER_ID;

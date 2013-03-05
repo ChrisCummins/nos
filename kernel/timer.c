@@ -12,7 +12,7 @@ static uint32_t tick = 0;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static void _timer_callback(struct registers_s registers) {
+static void _timer_callback(struct registers registers) {
 	tick++;
 	context_switch();
 }

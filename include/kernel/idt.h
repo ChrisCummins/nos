@@ -3,7 +3,7 @@
 
 #include <kernel/types.h>
 
-struct idt_entry_s {
+struct idt_entry {
 	uint16_t base_low;  /* The lower 16 bits of the interrupt address. */
 	uint16_t selector;  /* Kernel segment selector. */
 	uint8_t  always0;
@@ -11,9 +11,9 @@ struct idt_entry_s {
 	uint16_t base_high; /* The upper 16 bits of the address to jump to. */
 } __attribute__((packed));
 
-struct idt_pointer_s {
+struct idt_pointer {
 	uint16_t limit;
-	uint32_t base; /* The address of the idt_entry_s first element. */
+	uint32_t base; /* The address of the idt_entry first element. */
 } __attribute__((packed));
 
 /* GDT access flag positions. */

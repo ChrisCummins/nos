@@ -12,13 +12,13 @@
  *   pde  - Page directory.
  *   next - A pointer to the next task.
  */
-struct task_s {
+struct task {
 	int pid;
 	uint32_t esp;
 	uint32_t ebp;
 	uint32_t eip;
-	struct page_directory_s *pde;
-	struct task_s *next;
+	struct page_directory *pde;
+	struct task *next;
 };
 
 void init_tasking(void);

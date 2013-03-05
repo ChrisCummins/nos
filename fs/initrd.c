@@ -8,21 +8,21 @@
 #include <mm/heap.h>
 
 #define HEADER_ID 0xCC
-#define is_header(h) ((((struct initrd_file_header_s*)h)->id == HEADER_ID) \
+#define is_header(h) ((((struct initrd_file_header *)h)->id == HEADER_ID) \
 		      ? 1 : 0)
 
-static struct initrd_header_s *header;
-static struct initrd_file_header_s *file_headers;
-static struct fs_node_s *root;
-static struct fs_node_s *dev;
-static struct dirent_s dirent;
-static struct fs_node_s *nodes;
+static struct initrd_header *header;
+static struct initrd_file_header *file_headers;
+static struct fs_node *root;
+static struct fs_node *dev;
+static struct dirent dirent;
+static struct fs_node *nodes;
 static int nodes_count;
 
-static uint32_t _initrd_read(struct fs_node_s *node, uint32_t offset,
+static uint32_t _initrd_read(struct fs_node *node, uint32_t offset,
                              uint32_t size, uint8_t *buffer)
 {
-	struct initrd_file_header_s header = file_headers[node->inode];
+	struct initrd_file_header header = file_headers[node->inode];
 	uint32_t read_length = size;
 
 	assert(is_header(&header));
@@ -44,7 +44,7 @@ static uint32_t _initrd_read(struct fs_node_s *node, uint32_t offset,
 	return read_length;
 }
 
-static struct dirent_s *_initrd_readdir(struct fs_node_s *node, uint32_t index)
+static struct dirent *_initrd_readdir(struct fs_node *node, uint32_t index)
 {
 	if (node == root && !index) {
 		strcpy(dirent.name, "dev");
@@ -66,7 +66,7 @@ static struct dirent_s *_initrd_readdir(struct fs_node_s *node, uint32_t index)
 	return &dirent;
 }
 
-static struct fs_node_s *_initrd_finddir(struct fs_node_s *node, char *name)
+static struct fs_node *_initrd_finddir(struct fs_node *node, char *name)
 {
 	int i;
 
@@ -83,18 +83,18 @@ static struct fs_node_s *_initrd_finddir(struct fs_node_s *node, char *name)
 	return 0;
 }
 
-struct fs_node_s *init_initrd(uint32_t location)
+struct fs_node *init_initrd(uint32_t location)
 {
 	int i;
 
 	/* Initialise the main and file header pointers and populate the root
 	 * directory. */
-	header = (struct initrd_header_s *)location;
-	file_headers = (struct initrd_file_header_s *)(location		\
-						       + sizeof(struct initrd_header_s));
+	header = (struct initrd_header *)location;
+	file_headers = (struct initrd_file_header *)(location		\
+						     + sizeof(struct initrd_header));
 
 	/* Initialise the root (/) directory. */
-	root = kcreate(struct fs_node_s, 1);
+	root = kcreate(struct fs_node, 1);
 	strcpy(root->name, "initrd");
 	root->permissions = 0;
 	root->uid = 0;
@@ -112,7 +112,7 @@ struct fs_node_s *init_initrd(uint32_t location)
 	root->implementation = 0;
 
 	/* Initialise the devices (/dev) directory. */
-	dev = kcreate(struct fs_node_s, 1);
+	dev = kcreate(struct fs_node, 1);
 	strcpy(dev->name, "dev");
 	dev->permissions = 0;
 	dev->uid = 0;
@@ -129,13 +129,13 @@ struct fs_node_s *init_initrd(uint32_t location)
 	dev->pointer = 0;
 	dev->implementation = 0;
 
-	nodes = kcreate(struct fs_node_s, header->file_count);
+	nodes = kcreate(struct fs_node, header->file_count);
 	nodes_count = header->file_count;
 
 	/* Iterate over all files. */
 	for (i = 0; i < nodes_count; i++) {
-		struct fs_node_s *node = &nodes[i];
-		struct initrd_file_header_s *header = &file_headers[i];
+		struct fs_node *node = &nodes[i];
+		struct initrd_file_header *header = &file_headers[i];
 
 		/* We need to change the file's header so that it holds the file
 		 * offset relative to the start of memory, instead of the offset
